@@ -3,17 +3,22 @@
 <head>
   <script src="https://cdn.counter.dev/script.js" data-id="e07ee04a-13ac-4776-80f3-d666ca279dbc" data-utcoffset="2"></script>
   <meta charset="UTF-8">
-  <title>Xyla</title>
+  <title>Xyla - Premium Music Streaming</title>
+  <meta name="description" content="Stream your favorite music with Xyla - High quality audio streaming service">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="Assets/Images/Favicon 2.png">
-  <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div id="loading-screen"
-  style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#581c2b;z-index:100;display:flex;align-items:center;justify-content:center;flex-direction:column;">
-  <img src="Assets/Images/Favicon 1.png" alt="Xyla Logo" style="width:64px;height:64px;margin-bottom:1em;">
-  <div class="spinner"></div>
-</div>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="logo">Xyla</div>
+    <div class="spinner"></div>
+  </div>
+
+  <!-- App Container -->
+  <div class="app-container">
+    <!-- Sidebar -->
     <nav id="sidebar">
       <div>
         <div class="sidebar-header">
@@ -74,154 +79,125 @@
         &copy; 2025 Xyla. All rights reserved.
       </div>
     </nav>
-  <main id="main-content">
-    <div class="topbar" id="topbar">
-      <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Looking for a banger? 🔥">
-        <span class="search-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+
+    <!-- Main Content -->
+    <main id="main-content">
+      <div class="topbar">
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="Search for songs, artists, or albums...">
+          <span class="search-icon">
+            <svg width="30" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
             </svg>
           </span>
+        </div>
+        <button id="sidebar-toggle" class="sidebar-toggle-btn">☰</button>
       </div>
-      <!-- Toggle Button -->
-      <button id="sidebar-toggle" title="Toggle Sidebar" class="sidebar-toggle-btn" style="display:none;">☰</button>
-    </div>
-    <div id="section-area">
-      <div id="music-cards-container" class="music-cards"></div>
-    </div>
-  </main>
-  <!-- Audio Player Bar -->
+
+      <div id="section-area">
+        <!-- Content will be dynamically loaded here -->
+      </div>
+    </main>
+  </div>
+
+  <!-- Audio Player -->
   <div id="audio-player-bar">
-    <div class="player-cover"><img id="player-cover" src="https://th.bing.com/th/id/R.07082c66c44c34233aa278863986f6b2?rik=RPbm5MeYnNGuyg&riu=http%3a%2f%2fvignette2.wikia.nocookie.net%2fe__%2fimages%2f8%2f86%2fNo_cover.png%2frevision%2flatest%3fcb%3d20130103223703%26path-prefix%3deminem&ehk=gMkFf2uEhP4IePCnW8dN0%2bOjY74eRXm%2brevKOQweX2o%3d&risl=&pid=ImgRaw&r=0" alt="cover"></div>
+    <div class="player-cover">
+      <img id="player-cover" src="https://via.placeholder.com/300" alt="Album Cover">
+    </div>
     <div class="player-info">
-      <div class="player-title" id="player-title">No Song Playing</div>
-      <div class="player-artist" id="player-artist"></div>
+      <div class="player-title" id="player-title">No Song Selected</div>
+      <div class="player-artist" id="player-artist">Select a song to play</div>
     </div>
     <div class="player-controls">
-      <button class="player-btn" id="btn-prev" title="Previous">&#9198;</button>
-      <button class="player-btn" id="btn-shuffle" title="Shuffle">&#128256;</button>
-      <button class="player-btn" id="btn-repeat" title="Repeat">&#128257;</button>
-      <button class="player-btn" id="btn-playpause" title="Play/Pause">&#9654;</button>
-      <button class="player-btn" id="btn-next" title="Next">&#9197;</button>
+      <button class="player-btn" id="btn-shuffle" title="Shuffle">🔀</button>
+      <button class="player-btn" id="btn-prev" title="Previous">⏮</button>
+      <button class="player-btn primary" id="btn-playpause" title="Play">▶</button>
+      <button class="player-btn" id="btn-next" title="Next">⏭</button>
+      <button class="player-btn" id="btn-repeat" title="Repeat">🔁</button>
     </div>
     <div class="player-progress">
-      <span id="player-current">0:00</span>
+      <span class="progress-time" id="player-current">0:00</span>
       <div class="progress-bar" id="progress-bar">
         <div class="progress-bar-inner" id="progress-inner"></div>
       </div>
-      <span id="player-duration">0:00</span>
+      <span class="progress-time" id="player-duration">0:00</span>
     </div>
     <div class="player-volume">
-      <span title="Volume">&#128266;</span>
-      <input type="range" min="0" max="1" step="0.01" id="volume-range" value="0.8">
+      <span>🔊</span>
+      <input type="range" min="0" max="1" step="0.01" class="volume-slider" id="volume-range" value="0.8">
     </div>
     <audio id="audio" preload="metadata"></audio>
   </div>
+
   <!-- Settings Panel -->
   <div id="settings-panel">
     <div class="settings-box">
-      <button class="settings-close" id="close-settings" title="Close">&times;</button>
+      <button class="settings-close" id="close-settings">&times;</button>
       <div class="settings-title">Settings</div>
+      
       <div class="settings-row">
         <label class="settings-label" for="theme-select">Theme</label>
         <select class="settings-select" id="theme-select">
-          <option value="blue" selected>Blue (Default)</option>
-          <option value="dark">Dark</option>
+          <option value="dark" selected>Dark</option>
           <option value="light">Light</option>
+          <option value="auto">Auto (System)</option>
         </select>
       </div>
-      <div class="settings-row">
-        <label class="settings-label" for="speed-select">Playback Speed</label>
-        <select class="settings-select" id="speed-select">
-          <option value="1" selected>Normal</option>
-          <option value="1.25">1.25x</option>
-          <option value="1.5">1.5x</option>
-          <option value="2">2x</option>
-          <option value="0.75">0.75x</option>
-        </select>
-      </div>
+      
       <div class="settings-row">
         <label class="settings-label" for="quality-select">Audio Quality</label>
         <select class="settings-select" id="quality-select">
-          <option value="high" selected>High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
+          <option value="high" selected>High (320kbps)</option>
+          <option value="medium">Medium (192kbps)</option>
+          <option value="low">Low (128kbps)</option>
         </select>
       </div>
+      
       <div class="settings-row">
         <label class="settings-label" for="acc-name">Account Name</label>
-        <input class="settings-input" id="acc-name" type="text" placeholder="Your name" value="Xyla">
+        <input class="settings-input" id="acc-name" type="text" placeholder="Your name" value="Xyla User">
       </div>
+      
       <div class="settings-btn-row">
-        <button class="settings-btn" id="save-settings">Save</button>
-        <button class="settings-btn" id="logout-btn">Logout</button>
+        <button class="settings-btn secondary" id="logout-btn">Logout</button>
+        <button class="settings-btn primary" id="save-settings">Save Changes</button>
       </div>
     </div>
   </div>
+
   <!-- Contacts Panel -->
-  <div id="contacts-panel"
-    style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#141e3088;z-index:31;align-items:center;justify-content:center;">
-    <div class="settings-box" style="max-width:370px;">
-      <button class="settings-close" id="close-contacts" title="Close">&times;</button>
+  <div id="contacts-panel">
+    <div class="settings-box">
+      <button class="settings-close" id="close-contacts">&times;</button>
       <div class="settings-title">Contact Us</div>
-      <div style="display:flex;flex-direction:column;gap:1em;">
-        <a class="settings-btn" href="https://wa.me/+260776681802" target="_blank">
-  <span style="width:1.3em;display:inline-block;vertical-align:middle;">
-    <img src="https://www.logo.wine/a/logo/WhatsApp/WhatsApp-Logo.wine.svg" alt="WhatsApp" width="22" height="22" style="vertical-align:middle;">
-  </span> WhatsApp
-</a>
-        <a class="settings-btn" href="https://facebook.com/gabrielbanda08" target="_blank">
-          <span style="width:1.3em;display:inline-block;vertical-align:middle;">
-            <img src="https://www.logo.wine/a/logo/Facebook/Facebook-Logo.wine.svg" alt="Facebook" width="22" height="22" style="vertical-align:middle;">
-  </span> Facebook
+      
+      <div class="settings-row">
+        <p>Have questions or feedback? Reach out to us through any of these channels:</p>
+      </div>
+      
+      <div class="settings-btn-row" style="flex-direction: column; gap: 0.75rem;">
+        <a class="settings-btn secondary" href="https://wa.me/+260776681802" target="_blank">
+          <span style="margin-right: 0.5rem;">💬</span> WhatsApp
         </a>
-        <a class="settings-btn" href="https://x.com/gabrielban67529?s=21" target="_blank">
-          <span style="width:1.3em;display:inline-block;vertical-align:middle;">
-            <img src="Assets\Images\X.svg" alt="X" width="22" height="22" style="vertical-align:middle;">
-          </span> X (Twitter)
+        <a class="settings-btn secondary" href="mailto:gabrieljoshuabanda81@gmail.com">
+          <span style="margin-right: 0.5rem;">📧</span> Email
         </a>
-        <a class="settings-btn" href="https://instagram.com/gabrielbandax" target="_blank">
-          <span style="width:1.3em;display:inline-block;vertical-align:middle;">
-            <img src="https://www.logo.wine/a/logo/Instagram/Instagram-Logo.wine.svg" alt="Facebook" width="22" height="22" style="vertical-align:middle;">
-          </span> Instagram
+        <a class="settings-btn secondary" href="https://twitter.com/gabrielbandax" target="_blank">
+          <span style="margin-right: 0.5rem;">🐦</span> Twitter
         </a>
-        <a class="settings-btn" href="https://threads.net/@gabrielbandax" target="_blank">
-          <span style="width:1.3em;display:inline-block;vertical-align:middle;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Threads_%28app%29.svg/640px-Threads_%28app%29.svg.png" alt="Threads" width="22" height="22" style="vertical-align:middle;">
-          </span> Threads
-        </a>
-        <a class="settings-btn" href="https://discord.gg/gabrielbandax" target="_blank">
-          <span style="width:1.3em;display:inline-block;vertical-align:middle;">
-            <img src="Assets/Images/Discord.svg" alt="Discord" width="22" height="22" style="vertical-align:middle;">
-          </span> Discord
-        </a>
-        <a class="settings-btn" href="https://www.tiktok.com/@gabrielbandax" target="_blank">
-          <span style="width:1.3em;display:inline-block;vertical-align:middle;">
-            <img src="Assets/Images/TikTok.svg" alt="TikTok" width="22" height="22" style="vertical-align:middle;">
-          </span> TikTok
-        </a>
-        <a class="settings-btn" href="https://www.youtube.com/channel/UChfq_jiKzZKNPYQvZlXhMBw" target="_blank">
-          <span style="width:1.3em;display:inline-block;vertical-align:middle;">
-            <img src="Assets/Images/YouTube.svg" alt="YouTube" width="22" height="22" style="vertical-align:middle;">
-          </span> YouTube
-        </a>
-        <a class="settings-btn" href="mailto:gabrieljoshuabanda81@gmail.com">
-          <span style="width:1.3em;display:inline-block;vertical-align:middle;">
-            <img src="https://www.logo.wine/a/logo/Gmail/Gmail-Logo.wine.svg" alt="Gmail" width="22" height="22" style="vertical-align:middle;">
-          </span> Gmail
-        </a>
-         <a class="settings-btn" href="https://www.github.com/gabrielbanda08" target="_blank">
-          <span style="width:1.3em;display:inline-block;vertical-align:middle;">
-            <img src="Assets/Images/GitHub.svg" alt="GitHub" width="22" height="22" style="vertical-align:middle;">
-          </span> GitHub
+        <a class="settings-btn secondary" href="https://instagram.com/gabrielbandax" target="_blank">
+          <span style="margin-right: 0.5rem;">📷</span> Instagram
         </a>
       </div>
-      <div style="margin-top:1.5em;font-size:0.95em;opacity:0.7;text-align:center;">
-        Promote your music on Xyla!
+      
+      <div class="settings-row text-center mt-3">
+        <p style="font-size: 0.875rem; color: var(--text-muted);">
+          Artists: Promote your music on Xyla!
+        </p>
       </div>
     </div>
   </div>
-  <script src="js/main.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>
