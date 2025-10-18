@@ -19,6 +19,9 @@ It lets you play, pause, skip, and seek songs directly from your browser. 🎶
 👉 [Try it here](https://gabrielbanda08.github.io/Xyla/)  
 <img src="Assets/Images/QR.png" src="QR.png">
 
+## V.1.1.2
+<img src="Assets/Images/xyla.png" src="Version Update">
+
 ## Screenshot
 
 <img src="Assets/Images/screenshot.png" src="screenshot.png">

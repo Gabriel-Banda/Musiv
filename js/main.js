@@ -1682,13 +1682,14 @@
       },
     ];
 
-    // App State
+// App State
 let currentSongIndex = 0;
 let isPlaying = false;
 let isShuffled = false;
 let repeatMode = 0; // 0: off, 1: all, 2: one
 let currentVolume = 0.8;
 let currentSongsList = songs; // Track current displayed songs for filtering
+let currentTheme = localStorage.getItem('theme') || 'auto'; // 'light', 'dark', or 'auto'
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
@@ -1723,9 +1724,52 @@ const closeSettings = document.getElementById('close-settings');
 const closeContacts = document.getElementById('close-contacts');
 const saveSettings = document.getElementById('save-settings');
 const logoutBtn = document.getElementById('logout-btn');
+const themeSelect = document.getElementById('theme-select');
+const qualitySelect = document.getElementById('quality-select');
+const accName = document.getElementById('acc-name');
+
+// Theme Variables
+const lightTheme = {
+  '--primary-color': '#6772e5',
+  '--primary-dark': '#5a67d8',
+  '--primary-light': '#8c9eff',
+  '--background-dark': '#f8fafc',
+  '--background-card': '#ffffff',
+  '--background-sidebar': '#f1f5f9',
+  '--text-primary': '#1e293b',
+  '--text-secondary': '#475569',
+  '--text-muted': '#64748b',
+  '--accent-color': '#ff6b6b',
+  '--success-color': '#4ade80',
+  '--warning-color': '#f59e0b',
+  '--shadow-sm': '0 2px 4px rgba(0,0,0,0.05)',
+  '--shadow-md': '0 4px 12px rgba(0,0,0,0.08)',
+  '--shadow-lg': '0 8px 24px rgba(0,0,0,0.12)'
+};
+
+const darkTheme = {
+  '--primary-color': '#6772e5',
+  '--primary-dark': '#5a67d8',
+  '--primary-light': '#8c9eff',
+  '--background-dark': '#0f1419',
+  '--background-card': '#1a1f2e',
+  '--background-sidebar': '#141a25',
+  '--text-primary': '#ffffff',
+  '--text-secondary': '#b0b7c3',
+  '--text-muted': '#8a94a6',
+  '--accent-color': '#ff6b6b',
+  '--success-color': '#4ade80',
+  '--warning-color': '#f59e0b',
+  '--shadow-sm': '0 2px 4px rgba(0,0,0,0.1)',
+  '--shadow-md': '0 4px 12px rgba(0,0,0,0.15)',
+  '--shadow-lg': '0 8px 24px rgba(0,0,0,0.2)'
+};
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', function() {
+  // Apply saved theme first
+  applyTheme(currentTheme);
+  
   // Hide loading screen after 2 seconds
   setTimeout(() => {
     loadingScreen.style.opacity = '0';
@@ -1745,6 +1789,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initialize Media Session API
   initMediaSession();
+  
+  // Load saved settings
+  loadSavedSettings();
 });
 
 // Setup Event Listeners
@@ -1808,6 +1855,7 @@ function setupEventListeners() {
   
   // Settings actions
   saveSettings.addEventListener('click', function() {
+    saveSettingsToStorage();
     alert('Settings saved successfully!');
     settingsPanel.style.display = 'none';
   });
@@ -1818,6 +1866,103 @@ function setupEventListeners() {
       settingsPanel.style.display = 'none';
     }
   });
+  
+  // Theme change listener
+  themeSelect.addEventListener('change', function() {
+    applyTheme(this.value);
+  });
+}
+
+// Apply Theme
+function applyTheme(theme) {
+  const root = document.documentElement;
+  let themeToApply = theme;
+  
+  // Handle auto theme
+  if (theme === 'auto') {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+      themeToApply = 'light';
+    } else {
+      themeToApply = 'dark';
+    }
+    
+    // Listen for system theme changes
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+        if (currentTheme === 'auto') {
+          applyTheme('auto');
+        }
+      });
+    }
+  }
+  
+  // Apply the selected theme
+  const selectedTheme = themeToApply === 'light' ? lightTheme : darkTheme;
+  
+  Object.keys(selectedTheme).forEach(key => {
+    root.style.setProperty(key, selectedTheme[key]);
+  });
+  
+  // Update current theme and save
+  currentTheme = theme;
+  localStorage.setItem('theme', theme);
+  
+  // Update theme select in settings
+  if (themeSelect) {
+    themeSelect.value = theme;
+  }
+}
+
+// Load Saved Settings
+function loadSavedSettings() {
+  // Load theme
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    currentTheme = savedTheme;
+    applyTheme(savedTheme);
+    if (themeSelect) themeSelect.value = savedTheme;
+  }
+  
+  // Load audio quality
+  const savedQuality = localStorage.getItem('audioQuality');
+  if (savedQuality && qualitySelect) {
+    qualitySelect.value = savedQuality;
+  }
+  
+  // Load account name
+  const savedName = localStorage.getItem('accountName');
+  if (savedName && accName) {
+    accName.value = savedName;
+  }
+  
+  // Load volume
+  const savedVolume = localStorage.getItem('volume');
+  if (savedVolume && volumeRange) {
+    volumeRange.value = savedVolume;
+    audio.volume = savedVolume;
+    currentVolume = savedVolume;
+  }
+}
+
+// Save Settings to Storage
+function saveSettingsToStorage() {
+  if (themeSelect) {
+    localStorage.setItem('theme', themeSelect.value);
+    currentTheme = themeSelect.value;
+    applyTheme(themeSelect.value);
+  }
+  
+  if (qualitySelect) {
+    localStorage.setItem('audioQuality', qualitySelect.value);
+  }
+  
+  if (accName) {
+    localStorage.setItem('accountName', accName.value);
+  }
+  
+  if (volumeRange) {
+    localStorage.setItem('volume', volumeRange.value);
+  }
 }
 
 // Initialize Audio Player
@@ -1836,6 +1981,7 @@ function initAudioPlayer() {
   volumeRange.addEventListener('input', function() {
     audio.volume = this.value;
     currentVolume = this.value;
+    localStorage.setItem('volume', this.value);
   });
   
   // Audio events
