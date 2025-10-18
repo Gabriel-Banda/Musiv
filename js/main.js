@@ -205,7 +205,7 @@
         artist: "Eminem ft Big Sean & BabyTron",
         album: "The Death Of Slim Shady",
         genre: "Hip Hop/Rap",
-        cover: "https://th.bing.com/th?id=OIF.nxtTjt8c5WD%2bJKkz6gEotQ&rs=1&pid=ImgDetMain&o=7&rm=3",
+        cover: "https://t2.genius.com/unsafe/258x258/https%3A%2F%2Fimages.genius.com%2F69b9cdd3f8662a30bcfb6fd21bc751b4.1000x1000x1.png",
         audio: "Songs/Eminem - Tobey (feat. Big Sean Babytron) Official Audio.mp3",
       },
       {
@@ -1325,7 +1325,7 @@
         artist: "Juice WRLD",
         album: "Single",
         genre: "Hip-hop · trap",
-        cover: "",
+        cover: "https://imgs.search.brave.com/wee8heypgtn_-o4yYfpuQ3ZgdagBaPIU6oxMgtaJQSE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9wcmV2/aWV3LnJlZGQuaXQv/d2hhdHMtdGhlLWhh/cmRlc3QtanVpY2Ut/d3JsZC1waWMteW91/dmUtc2Vlbi12MC1w/eDFqZW5sdHc2ZWUx/LmpwZWc_d2lkdGg9/ODI4JmZvcm1hdD1w/anBnJmF1dG89d2Vi/cCZzPTM2ODYwYTUy/NmEzMjYwMjJiYWI0/NDM3ZDBkNThlNjUx/NzA2YzJkZWE",
         audio: "Songs/Juice wrld- COMPORTEMENT Freestyle.mp3",
       },
       {
@@ -1357,7 +1357,7 @@
         artist: "Kendrick Lamar",
         album: "Mr. Morale And The Big Steppers",
         genre: "Hip-hop · Rap",
-        cover: "https://th.bing.com/th?id=OIF.%2fkFY6fd8NorlbZDmvSF0CQ&rs=1&pid=ImgDetMain&o=7&rm=3",
+        cover: "https://t2.genius.com/unsafe/258x258/https%3A%2F%2Fimages.genius.com%2F2f8cae9b56ed9c643520ef2fd62cd378.1000x1000x1.png",
         audio: "Songs/Kendrick Lamar - Rich Spirit.mp3",
       },
       {
@@ -1365,7 +1365,7 @@
         artist: "Kendrick Lamar ft Baby Keem & Sam Dew",
         album: "Mr. Morale And The Big Steppers",
         genre: "Hip-hop · Rap",
-        cover: "https://th.bing.com/th?id=OIF.%2fkFY6fd8NorlbZDmvSF0CQ&rs=1&pid=ImgDetMain&o=7&rm=3",
+        cover: "https://t2.genius.com/unsafe/258x258/https%3A%2F%2Fimages.genius.com%2F2f8cae9b56ed9c643520ef2fd62cd378.1000x1000x1.png",
         audio: "Songs/Kendrick Lamar - Savior ft. Baby Keem Sam Dew (Official Audio).mp3",
       },
       {
@@ -1373,7 +1373,7 @@
         artist: "Kendrick Lamar ft Kodack Black",
         album: "Mr. Morale And The Big Steppers",
         genre: "Hip-hop · Rap",
-        cover: "https://th.bing.com/th?id=OIF.%2fkFY6fd8NorlbZDmvSF0CQ&rs=1&pid=ImgDetMain&o=7&rm=3",
+        cover: "https://t2.genius.com/unsafe/258x258/https%3A%2F%2Fimages.genius.com%2F2f8cae9b56ed9c643520ef2fd62cd378.1000x1000x1.png",
         audio: "Songs/Kendrick Lamar - Silent Hill ft. Kodak Black (Official Audio).mp3",
       },
       {
@@ -1683,485 +1683,638 @@
     ];
 
     // App State
-    let currentSongIndex = 0;
-    let isPlaying = false;
-    let isShuffled = false;
-    let repeatMode = 0; // 0: off, 1: all, 2: one
-    let currentVolume = 0.8;
+let currentSongIndex = 0;
+let isPlaying = false;
+let isShuffled = false;
+let repeatMode = 0; // 0: off, 1: all, 2: one
+let currentVolume = 0.8;
+let currentSongsList = songs; // Track current displayed songs for filtering
 
-    // DOM Elements
-    const loadingScreen = document.getElementById('loading-screen');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    const mainContent = document.getElementById('main-content');
-    const audioPlayerBar = document.getElementById('audio-player-bar');
-    const sectionArea = document.getElementById('section-area');
-    const searchInput = document.getElementById('search-input');
-    const sidebarLinks = document.querySelectorAll('.sidebar-link');
-    
-    // Audio Elements
-    const audio = document.getElementById('audio');
-    const playerCover = document.getElementById('player-cover');
-    const playerTitle = document.getElementById('player-title');
-    const playerArtist = document.getElementById('player-artist');
-    const btnPlayPause = document.getElementById('btn-playpause');
-    const btnPrev = document.getElementById('btn-prev');
-    const btnNext = document.getElementById('btn-next');
-    const btnShuffle = document.getElementById('btn-shuffle');
-    const btnRepeat = document.getElementById('btn-repeat');
-    const progressBar = document.getElementById('progress-bar');
-    const progressInner = document.getElementById('progress-inner');
-    const playerCurrent = document.getElementById('player-current');
-    const playerDuration = document.getElementById('player-duration');
-    const volumeRange = document.getElementById('volume-range');
+// DOM Elements
+const loadingScreen = document.getElementById('loading-screen');
+const sidebar = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebar-toggle');
+const mainContent = document.getElementById('main-content');
+const audioPlayerBar = document.getElementById('audio-player-bar');
+const sectionArea = document.getElementById('section-area');
+const searchInput = document.getElementById('search-input');
+const sidebarLinks = document.querySelectorAll('.sidebar-link');
 
-    // Settings Elements
-    const settingsPanel = document.getElementById('settings-panel');
-    const contactsPanel = document.getElementById('contacts-panel');
-    const closeSettings = document.getElementById('close-settings');
-    const closeContacts = document.getElementById('close-contacts');
-    const saveSettings = document.getElementById('save-settings');
-    const logoutBtn = document.getElementById('logout-btn');
+// Audio Elements
+const audio = document.getElementById('audio');
+const playerCover = document.getElementById('player-cover');
+const playerTitle = document.getElementById('player-title');
+const playerArtist = document.getElementById('player-artist');
+const btnPlayPause = document.getElementById('btn-playpause');
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+const btnShuffle = document.getElementById('btn-shuffle');
+const btnRepeat = document.getElementById('btn-repeat');
+const progressBar = document.getElementById('progress-bar');
+const progressInner = document.getElementById('progress-inner');
+const playerCurrent = document.getElementById('player-current');
+const playerDuration = document.getElementById('player-duration');
+const volumeRange = document.getElementById('volume-range');
 
-    // Initialize App
-    document.addEventListener('DOMContentLoaded', function() {
-      // Hide loading screen after 2 seconds
-      setTimeout(() => {
-        loadingScreen.style.opacity = '0';
-        setTimeout(() => {
-          loadingScreen.style.display = 'none';
-        }, 500);
-      }, 2000);
+// Settings Elements
+const settingsPanel = document.getElementById('settings-panel');
+const contactsPanel = document.getElementById('contacts-panel');
+const closeSettings = document.getElementById('close-settings');
+const closeContacts = document.getElementById('close-contacts');
+const saveSettings = document.getElementById('save-settings');
+const logoutBtn = document.getElementById('logout-btn');
 
-      // Load home section by default
-      loadSection('home');
+// Initialize App
+document.addEventListener('DOMContentLoaded', function() {
+  // Hide loading screen after 2 seconds
+  setTimeout(() => {
+    loadingScreen.style.opacity = '0';
+    setTimeout(() => {
+      loadingScreen.style.display = 'none';
+    }, 500);
+  }, 2000);
+
+  // Load home section by default
+  loadSection('home');
+  
+  // Setup event listeners
+  setupEventListeners();
+  
+  // Initialize audio player
+  initAudioPlayer();
+  
+  // Initialize Media Session API
+  initMediaSession();
+});
+
+// Setup Event Listeners
+function setupEventListeners() {
+  // Sidebar navigation
+  sidebarLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const section = this.getAttribute('data-section');
       
-      // Setup event listeners
-      setupEventListeners();
+      // Update active state
+      sidebarLinks.forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
       
-      // Initialize audio player
-      initAudioPlayer();
+      // Load section
+      loadSection(section);
+    });
+  });
+  
+  // Sidebar toggle for mobile
+  sidebarToggle.addEventListener('click', function() {
+    sidebar.classList.toggle('active');
+  });
+  
+  // Search functionality
+  searchInput.addEventListener('input', function() {
+    filterSongs(this.value);
+  });
+  
+  // Settings panels
+  document.querySelector('.sidebar-link[data-section="settings"]').addEventListener('click', function(e) {
+    e.preventDefault();
+    settingsPanel.style.display = 'flex';
+  });
+  
+  document.querySelector('.sidebar-link[data-section="contacts"]').addEventListener('click', function(e) {
+    e.preventDefault();
+    contactsPanel.style.display = 'flex';
+  });
+  
+  closeSettings.addEventListener('click', function() {
+    settingsPanel.style.display = 'none';
+  });
+  
+  closeContacts.addEventListener('click', function() {
+    contactsPanel.style.display = 'none';
+  });
+  
+  // Close panels when clicking outside
+  settingsPanel.addEventListener('click', function(e) {
+    if (e.target === settingsPanel) {
+      settingsPanel.style.display = 'none';
+    }
+  });
+  
+  contactsPanel.addEventListener('click', function(e) {
+    if (e.target === contactsPanel) {
+      contactsPanel.style.display = 'none';
+    }
+  });
+  
+  // Settings actions
+  saveSettings.addEventListener('click', function() {
+    alert('Settings saved successfully!');
+    settingsPanel.style.display = 'none';
+  });
+  
+  logoutBtn.addEventListener('click', function() {
+    if (confirm('Are you sure you want to logout?')) {
+      alert('Logged out successfully!');
+      settingsPanel.style.display = 'none';
+    }
+  });
+}
+
+// Initialize Audio Player
+function initAudioPlayer() {
+  // Player controls
+  btnPlayPause.addEventListener('click', togglePlayPause);
+  btnPrev.addEventListener('click', playPrevious);
+  btnNext.addEventListener('click', playNext);
+  btnShuffle.addEventListener('click', toggleShuffle);
+  btnRepeat.addEventListener('click', toggleRepeat);
+  
+  // Progress bar
+  progressBar.addEventListener('click', seekAudio);
+  
+  // Volume control
+  volumeRange.addEventListener('input', function() {
+    audio.volume = this.value;
+    currentVolume = this.value;
+  });
+  
+  // Audio events
+  audio.addEventListener('loadedmetadata', function() {
+    playerDuration.textContent = formatTime(audio.duration);
+    updateMediaSessionPositionState();
+  });
+  
+  audio.addEventListener('timeupdate', function() {
+    if (audio.duration) {
+      const progressPercent = (audio.currentTime / audio.duration) * 100;
+      progressInner.style.width = progressPercent + '%';
+      playerCurrent.textContent = formatTime(audio.currentTime);
+      updateMediaSessionPositionState();
+    }
+  });
+  
+  audio.addEventListener('ended', function() {
+    if (repeatMode === 2) {
+      // Repeat one
+      audio.currentTime = 0;
+      audio.play();
+    } else if (repeatMode === 1 || isShuffled) {
+      // Repeat all or shuffle
+      playNext();
+    } else {
+      // No repeat - stop at end
+      isPlaying = false;
+      btnPlayPause.textContent = '▶';
+      updateMediaSessionPlaybackState();
+    }
+  });
+
+  audio.addEventListener('play', function() {
+    updateMediaSessionPlaybackState();
+  });
+
+  audio.addEventListener('pause', function() {
+    updateMediaSessionPlaybackState();
+  });
+}
+
+// Initialize Media Session API
+function initMediaSession() {
+  // Check if Media Session API is supported
+  if ('mediaSession' in navigator) {
+    // Set media session action handlers
+    navigator.mediaSession.setActionHandler('play', function() {
+      togglePlayPause();
     });
 
-    // Setup Event Listeners
-    function setupEventListeners() {
-      // Sidebar navigation
-      sidebarLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-          e.preventDefault();
-          const section = this.getAttribute('data-section');
-          
-          // Update active state
-          sidebarLinks.forEach(l => l.classList.remove('active'));
-          this.classList.add('active');
-          
-          // Load section
-          loadSection(section);
-        });
-      });
-      
-      // Sidebar toggle for mobile
-      sidebarToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-      });
-      
-      // Search functionality
-      searchInput.addEventListener('input', function() {
-        filterSongs(this.value);
-      });
-      
-      // Settings panels
-      document.querySelector('.sidebar-link[data-section="settings"]').addEventListener('click', function(e) {
-        e.preventDefault();
-        settingsPanel.style.display = 'flex';
-      });
-      
-      document.querySelector('.sidebar-link[data-section="contacts"]').addEventListener('click', function(e) {
-        e.preventDefault();
-        contactsPanel.style.display = 'flex';
-      });
-      
-      closeSettings.addEventListener('click', function() {
-        settingsPanel.style.display = 'none';
-      });
-      
-      closeContacts.addEventListener('click', function() {
-        contactsPanel.style.display = 'none';
-      });
-      
-      // Close panels when clicking outside
-      settingsPanel.addEventListener('click', function(e) {
-        if (e.target === settingsPanel) {
-          settingsPanel.style.display = 'none';
-        }
-      });
-      
-      contactsPanel.addEventListener('click', function(e) {
-        if (e.target === contactsPanel) {
-          contactsPanel.style.display = 'none';
-        }
-      });
-      
-      // Settings actions
-      saveSettings.addEventListener('click', function() {
-        alert('Settings saved successfully!');
-        settingsPanel.style.display = 'none';
-      });
-      
-      logoutBtn.addEventListener('click', function() {
-        if (confirm('Are you sure you want to logout?')) {
-          alert('Logged out successfully!');
-          settingsPanel.style.display = 'none';
-        }
-      });
-    }
+    navigator.mediaSession.setActionHandler('pause', function() {
+      togglePlayPause();
+    });
 
-    // Initialize Audio Player
-    function initAudioPlayer() {
-      // Player controls
-      btnPlayPause.addEventListener('click', togglePlayPause);
-      btnPrev.addEventListener('click', playPrevious);
-      btnNext.addEventListener('click', playNext);
-      btnShuffle.addEventListener('click', toggleShuffle);
-      btnRepeat.addEventListener('click', toggleRepeat);
-      
-      // Progress bar
-      progressBar.addEventListener('click', seekAudio);
-      
-      // Volume control
-      volumeRange.addEventListener('input', function() {
-        audio.volume = this.value;
-        currentVolume = this.value;
-      });
-      
-      // Audio events
-      audio.addEventListener('loadedmetadata', function() {
-        playerDuration.textContent = formatTime(audio.duration);
-      });
-      
-      audio.addEventListener('timeupdate', function() {
-        if (audio.duration) {
-          const progressPercent = (audio.currentTime / audio.duration) * 100;
-          progressInner.style.width = progressPercent + '%';
-          playerCurrent.textContent = formatTime(audio.currentTime);
-        }
-      });
-      
-      audio.addEventListener('ended', function() {
-        if (repeatMode === 2) {
-          // Repeat one
-          audio.currentTime = 0;
-          audio.play();
-        } else if (repeatMode === 1 || isShuffled) {
-          // Repeat all or shuffle
-          playNext();
-        } else {
-          // No repeat - stop at end
-          isPlaying = false;
-          btnPlayPause.textContent = '▶';
-        }
-      });
-    }
+    navigator.mediaSession.setActionHandler('previoustrack', function() {
+      playPrevious();
+    });
 
-    // Load Section Content
-    function loadSection(section) {
-      let content = '';
-      
-      switch(section) {
-        case 'home':
-          content = `
-            <div class="section-header">
-              <h1 class="section-title">Welcome to Xyla</h1>
-              <p class="section-subtitle">Your premium music streaming experience</p>
-            </div>
-            <div class="music-cards" id="music-cards-container">
-              ${renderMusicCards(songs)}
-            </div>
-          `;
-          break;
-          
-        case 'search':
-          content = `
-            <div class="section-header">
-              <h1 class="section-title">Search</h1>
-              <p class="section-subtitle">Find your favorite songs and artists</p>
-            </div>
-            <div class="music-cards" id="music-cards-container">
-              ${renderMusicCards(songs)}
-            </div>
-          `;
-          break;
-          
-        case 'trending':
-          content = `
-            <div class="section-header">
-              <h1 class="section-title">Trending Now</h1>
-              <p class="section-subtitle">The hottest tracks right now</p>
-            </div>
-            <div class="music-cards" id="music-cards-container">
-              ${renderMusicCards(songs.slice().sort(() => 0.5 - Math.random()).slice(0, 6))}
-            </div>
-          `;
-          break;
-          
-        case 'playlists':
-          content = `
-            <div class="section-header">
-              <h1 class="section-title">Your Playlists</h1>
-              <p class="section-subtitle">Collections of your favorite music</p>
-            </div>
-            <div class="music-cards" id="music-cards-container">
-              <div class="music-card">
-                <div class="music-card-cover" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
-                  <span style="font-size: 2rem;">❤</span>
-                </div>
-                <div class="music-card-info">
-                  <div class="music-card-title">Liked Songs</div>
-                  <div class="music-card-artist">Your favorite tracks</div>
-                </div>
-              </div>
-              <div class="music-card">
-                <div class="music-card-cover" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center;">
-                  <span style="font-size: 2rem;">🎵</span>
-                </div>
-                <div class="music-card-info">
-                  <div class="music-card-title">Chill Vibes</div>
-                  <div class="music-card-artist">Relaxing tunes</div>
-                </div>
-              </div>
-              <div class="music-card">
-                <div class="music-card-cover" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center;">
-                  <span style="font-size: 2rem;">⚡</span>
-                </div>
-                <div class="music-card-info">
-                  <div class="music-card-title">Workout Mix</div>
-                  <div class="music-card-artist">Energy boosters</div>
-                </div>
-              </div>
-            </div>
-          `;
-          break;
-          
-        case 'genres':
-          const genres = [...new Set(songs.map(song => song.genre))];
-          content = `
-            <div class="section-header">
-              <h1 class="section-title">Genres</h1>
-              <p class="section-subtitle">Explore music by genre</p>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-              ${genres.map(genre => `
-                <div class="music-card" style="text-align: center; padding: 1.5rem 1rem; cursor: pointer;" onclick="filterByGenre('${genre}')">
-                  <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎵</div>
-                  <div class="music-card-title">${genre}</div>
-                </div>
-              `).join('')}
-            </div>
-            <div class="music-cards" id="music-cards-container">
-              ${renderMusicCards(songs)}
-            </div>
-          `;
-          break;
-          
-        case 'library':
-          content = `
-            <div class="section-header">
-              <h1 class="section-title">Your Library</h1>
-              <p class="section-subtitle">Your saved music and playlists</p>
-            </div>
-            <div class="music-cards" id="music-cards-container">
-              ${renderMusicCards(songs.slice(0, 4))}
-            </div>
-          `;
-          break;
-          
-        default:
-          content = `
-            <div class="section-header">
-              <h1 class="section-title">Welcome to Xyla</h1>
-              <p class="section-subtitle">Your premium music streaming experience</p>
-            </div>
-            <div class="music-cards" id="music-cards-container">
-              ${renderMusicCards(songs)}
-            </div>
-          `;
-      }
-      
-      sectionArea.innerHTML = content;
-      
-      // Reattach event listeners to music cards
-      setTimeout(() => {
-        const musicCards = document.querySelectorAll('.music-card');
-        musicCards.forEach((card, index) => {
-          card.addEventListener('click', function() {
-            playSong(index);
-          });
-        });
-      }, 0);
-    }
+    navigator.mediaSession.setActionHandler('nexttrack', function() {
+      playNext();
+    });
 
-    // Render Music Cards
-    function renderMusicCards(songsArray) {
-      return songsArray.map(song => `
-        <div class="music-card" data-id="${song.id}">
-          <div class="music-card-cover">
-            <img src="${song.cover}" alt="${song.album}">
-          </div>
-          <div class="music-card-info">
-            <div class="music-card-title">${song.title}</div>
-            <div class="music-card-artist">${song.artist}</div>
-            <div class="music-card-album">${song.album}</div>
-          </div>
-          <div class="music-card-actions">
-            <button class="music-card-btn">▶ Play</button>
-            <button class="music-card-btn">❤</button>
-          </div>
-        </div>
-      `).join('');
-    }
+    navigator.mediaSession.setActionHandler('seekbackward', function(details) {
+      const skipTime = details.seekOffset || 10;
+      audio.currentTime = Math.max(audio.currentTime - skipTime, 0);
+    });
 
-    // Filter Songs
-    function filterSongs(query) {
-      const filteredSongs = songs.filter(song => 
-        song.title.toLowerCase().includes(query.toLowerCase()) ||
-        song.artist.toLowerCase().includes(query.toLowerCase()) ||
-        song.album.toLowerCase().includes(query.toLowerCase()) ||
-        song.genre.toLowerCase().includes(query.toLowerCase())
-      );
-      
-      const container = document.getElementById('music-cards-container');
-      if (container) {
-        container.innerHTML = renderMusicCards(filteredSongs);
-        
-        // Reattach event listeners
-        setTimeout(() => {
-          const musicCards = document.querySelectorAll('.music-card');
-          musicCards.forEach((card, index) => {
-            card.addEventListener('click', function() {
-              playSong(index, filteredSongs);
-            });
-          });
-        }, 0);
-      }
-    }
+    navigator.mediaSession.setActionHandler('seekforward', function(details) {
+      const skipTime = details.seekOffset || 10;
+      audio.currentTime = Math.min(audio.currentTime + skipTime, audio.duration);
+    });
 
-    // Filter by Genre
-    function filterByGenre(genre) {
-      const filteredSongs = songs.filter(song => song.genre === genre);
-      const container = document.getElementById('music-cards-container');
-      if (container) {
-        container.innerHTML = renderMusicCards(filteredSongs);
-        
-        // Reattach event listeners
-        setTimeout(() => {
-          const musicCards = document.querySelectorAll('.music-card');
-          musicCards.forEach((card, index) => {
-            card.addEventListener('click', function() {
-              playSong(index, filteredSongs);
-            });
-          });
-        }, 0);
-      }
-    }
-
-    // Play Song
-    function playSong(index, songsArray = songs) {
-      currentSongIndex = index;
-      const song = songsArray[index];
-      
-      // Update player UI
-      playerCover.src = song.cover;
-      playerTitle.textContent = song.title;
-      playerArtist.textContent = song.artist;
-      
-      // Set audio source
-      audio.src = song.audio;
-      audio.load();
-      
-      // Play the song
-      audio.play();
-      isPlaying = true;
-      btnPlayPause.textContent = '⏸';
-      
-      // Highlight playing card
-      const musicCards = document.querySelectorAll('.music-card');
-      musicCards.forEach(card => card.classList.remove('playing'));
-      musicCards[index].classList.add('playing');
-    }
-
-    // Toggle Play/Pause
-    function togglePlayPause() {
-      if (!audio.src) {
-        playSong(0);
+    navigator.mediaSession.setActionHandler('seekto', function(details) {
+      if (details.fastSeek && 'fastSeek' in audio) {
+        audio.fastSeek(details.seekTime);
         return;
       }
-      
-      if (isPlaying) {
-        audio.pause();
-        btnPlayPause.textContent = '▶';
-      } else {
-        audio.play();
-        btnPlayPause.textContent = '⏸';
-      }
-      
-      isPlaying = !isPlaying;
-    }
+      audio.currentTime = details.seekTime;
+    });
 
-    // Play Previous Song
-    function playPrevious() {
-      if (isShuffled) {
-        currentSongIndex = Math.floor(Math.random() * songs.length);
-      } else {
-        currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-      }
-      
-      playSong(currentSongIndex);
-    }
-
-    // Play Next Song
-    function playNext() {
-      if (isShuffled) {
-        currentSongIndex = Math.floor(Math.random() * songs.length);
-      } else {
-        currentSongIndex = (currentSongIndex + 1) % songs.length;
-      }
-      
-      playSong(currentSongIndex);
-    }
-
-    // Toggle Shuffle
-    function toggleShuffle() {
-      isShuffled = !isShuffled;
-      btnShuffle.classList.toggle('active', isShuffled);
-    }
-
-    // Toggle Repeat
-    function toggleRepeat() {
-      repeatMode = (repeatMode + 1) % 3;
-      
-      btnRepeat.classList.toggle('active', repeatMode > 0);
-      
-      if (repeatMode === 1) {
-        btnRepeat.textContent = '🔁';
-        btnRepeat.title = 'Repeat All';
-      } else if (repeatMode === 2) {
-        btnRepeat.textContent = '🔂';
-        btnRepeat.title = 'Repeat One';
-      } else {
-        btnRepeat.textContent = '🔁';
-        btnRepeat.title = 'Repeat Off';
+    // Set position state (for progress bar in media controls)
+    function updateMediaSessionPositionState() {
+      if ('setPositionState' in navigator.mediaSession) {
+        navigator.mediaSession.setPositionState({
+          duration: audio.duration,
+          playbackRate: audio.playbackRate,
+          position: audio.currentTime
+        });
       }
     }
 
-    // Seek Audio
-    function seekAudio(e) {
-      const rect = progressBar.getBoundingClientRect();
-      const percent = (e.clientX - rect.left) / rect.width;
-      audio.currentTime = percent * audio.duration;
-    }
+    // Update playback state for media session
+    window.updateMediaSessionPlaybackState = function() {
+      navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+    };
 
-    // Format Time (seconds to MM:SS)
- function formatTime(seconds) {
+    // Update media session metadata
+    window.updateMediaSessionMetadata = function(song) {
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: song.title,
+          artist: song.artist,
+          album: song.album,
+          artwork: [
+            { src: song.cover, sizes: '96x96', type: 'image/jpeg' },
+            { src: song.cover, sizes: '128x128', type: 'image/jpeg' },
+            { src: song.cover, sizes: '192x192', type: 'image/jpeg' },
+            { src: song.cover, sizes: '256x256', type: 'image/jpeg' },
+            { src: song.cover, sizes: '384x384', type: 'image/jpeg' },
+            { src: song.cover, sizes: '512x512', type: 'image/jpeg' }
+          ]
+        });
+      }
+    };
+  }
+}
+
+// Update Media Session Playback State
+function updateMediaSessionPlaybackState() {
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+  }
+}
+
+// Update Media Session Position State
+function updateMediaSessionPositionState() {
+  if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
+    navigator.mediaSession.setPositionState({
+      duration: audio.duration,
+      playbackRate: audio.playbackRate,
+      position: audio.currentTime
+    });
+  }
+}
+
+// Update Media Session Metadata
+function updateMediaSessionMetadata(song) {
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: song.title,
+      artist: song.artist,
+      album: song.album,
+      artwork: [
+        { src: song.cover, sizes: '96x96', type: 'image/jpeg' },
+        { src: song.cover, sizes: '128x128', type: 'image/jpeg' },
+        { src: song.cover, sizes: '192x192', type: 'image/jpeg' },
+        { src: song.cover, sizes: '256x256', type: 'image/jpeg' },
+        { src: song.cover, sizes: '384x384', type: 'image/jpeg' },
+        { src: song.cover, sizes: '512x512', type: 'image/jpeg' }
+      ]
+    });
+  }
+}
+
+// Load Section Content
+function loadSection(section) {
+  let content = '';
+  
+  switch(section) {
+    case 'home':
+      content = `
+        <div class="section-header">
+          <h1 class="section-title">Welcome to Xyla</h1>
+          <p class="section-subtitle">Your premium music streaming experience</p>
+        </div>
+        <div class="music-cards" id="music-cards-container">
+          ${renderMusicCards(songs)}
+        </div>
+      `;
+      currentSongsList = songs;
+      break;
+      
+    case 'search':
+      content = `
+        <div class="section-header">
+          <h1 class="section-title">Search</h1>
+          <p class="section-subtitle">Find your favorite songs and artists</p>
+        </div>
+        <div class="music-cards" id="music-cards-container">
+          ${renderMusicCards(songs)}
+        </div>
+      `;
+      currentSongsList = songs;
+      break;
+      
+    case 'trending':
+      content = `
+        <div class="section-header">
+          <h1 class="section-title">Trending Now</h1>
+          <p class="section-subtitle">The hottest tracks right now</p>
+        </div>
+        <div class="music-cards" id="music-cards-container">
+          ${renderMusicCards(songs.slice().sort(() => 0.5 - Math.random()).slice(0, 6))}
+        </div>
+      `;
+      currentSongsList = songs.slice().sort(() => 0.5 - Math.random()).slice(0, 6);
+      break;
+      
+    case 'playlists':
+      content = `
+        <div class="section-header">
+          <h1 class="section-title">Your Playlists</h1>
+          <p class="section-subtitle">Collections of your favorite music</p>
+        </div>
+        <div class="music-cards" id="music-cards-container">
+          <div class="music-card">
+            <div class="music-card-cover" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+              <span style="font-size: 2rem;">❤</span>
+            </div>
+            <div class="music-card-info">
+              <div class="music-card-title">Liked Songs</div>
+              <div class="music-card-artist">Your favorite tracks</div>
+            </div>
+          </div>
+          <div class="music-card">
+            <div class="music-card-cover" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center;">
+              <span style="font-size: 2rem;">🎵</span>
+            </div>
+            <div class="music-card-info">
+              <div class="music-card-title">Chill Vibes</div>
+              <div class="music-card-artist">Relaxing tunes</div>
+            </div>
+          </div>
+          <div class="music-card">
+            <div class="music-card-cover" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center;">
+              <span style="font-size: 2rem;">⚡</span>
+            </div>
+            <div class="music-card-info">
+              <div class="music-card-title">Workout Mix</div>
+              <div class="music-card-artist">Energy boosters</div>
+            </div>
+          </div>
+        </div>
+      `;
+      break;
+      
+    case 'genres':
+      const genres = [...new Set(songs.map(song => song.genre))];
+      content = `
+        <div class="section-header">
+          <h1 class="section-title">Genres</h1>
+          <p class="section-subtitle">Explore music by genre</p>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+          ${genres.map(genre => `
+            <div class="music-card" style="text-align: center; padding: 1.5rem 1rem; cursor: pointer;" onclick="filterByGenre('${genre}')">
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎵</div>
+              <div class="music-card-title">${genre}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="music-cards" id="music-cards-container">
+          ${renderMusicCards(songs)}
+        </div>
+      `;
+      currentSongsList = songs;
+      break;
+      
+    case 'library':
+      content = `
+        <div class="section-header">
+          <h1 class="section-title">Your Library</h1>
+          <p class="section-subtitle">Your saved music and playlists</p>
+        </div>
+        <div class="music-cards" id="music-cards-container">
+          ${renderMusicCards(songs.slice(0, 4))}
+        </div>
+      `;
+      currentSongsList = songs.slice(0, 4);
+      break;
+      
+    default:
+      content = `
+        <div class="section-header">
+          <h1 class="section-title">Welcome to Xyla</h1>
+          <p class="section-subtitle">Your premium music streaming experience</p>
+        </div>
+        <div class="music-cards" id="music-cards-container">
+          ${renderMusicCards(songs)}
+        </div>
+      `;
+      currentSongsList = songs;
+  }
+  
+  sectionArea.innerHTML = content;
+  
+  // Reattach event listeners to music cards
+  setTimeout(() => {
+    const musicCards = document.querySelectorAll('.music-card');
+    musicCards.forEach((card, index) => {
+      card.addEventListener('click', function() {
+        playSong(index, currentSongsList);
+      });
+    });
+  }, 0);
+}
+
+// Render Music Cards
+function renderMusicCards(songsArray) {
+  return songsArray.map(song => `
+    <div class="music-card" data-id="${song.id}">
+      <div class="music-card-cover">
+        <img src="${song.cover}" alt="${song.album}" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+      </div>
+      <div class="music-card-info">
+        <div class="music-card-title">${song.title}</div>
+        <div class="music-card-artist">${song.artist}</div>
+        <div class="music-card-album">${song.album}</div>
+      </div>
+      <div class="music-card-actions">
+        <button class="music-card-btn">▶ Play</button>
+        <button class="music-card-btn">❤</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Filter Songs
+function filterSongs(query) {
+  const filteredSongs = songs.filter(song => 
+    song.title.toLowerCase().includes(query.toLowerCase()) ||
+    song.artist.toLowerCase().includes(query.toLowerCase()) ||
+    song.album.toLowerCase().includes(query.toLowerCase()) ||
+    song.genre.toLowerCase().includes(query.toLowerCase())
+  );
+  
+  currentSongsList = filteredSongs;
+  
+  const container = document.getElementById('music-cards-container');
+  if (container) {
+    container.innerHTML = renderMusicCards(filteredSongs);
+    
+    // Reattach event listeners
+    setTimeout(() => {
+      const musicCards = document.querySelectorAll('.music-card');
+      musicCards.forEach((card, index) => {
+        card.addEventListener('click', function() {
+          playSong(index, filteredSongs);
+        });
+      });
+    }, 0);
+  }
+}
+
+// Filter by Genre
+function filterByGenre(genre) {
+  const filteredSongs = songs.filter(song => song.genre === genre);
+  currentSongsList = filteredSongs;
+  
+  const container = document.getElementById('music-cards-container');
+  if (container) {
+    container.innerHTML = renderMusicCards(filteredSongs);
+    
+    // Reattach event listeners
+    setTimeout(() => {
+      const musicCards = document.querySelectorAll('.music-card');
+      musicCards.forEach((card, index) => {
+        card.addEventListener('click', function() {
+          playSong(index, filteredSongs);
+        });
+      });
+    }, 0);
+  }
+}
+
+// Play Song
+function playSong(index, songsArray = songs) {
+  currentSongIndex = index;
+  const song = songsArray[index];
+  
+  // Update player UI
+  playerCover.src = song.cover;
+  playerTitle.textContent = song.title;
+  playerArtist.textContent = song.artist;
+  
+  // Set audio source
+  audio.src = song.audio;
+  audio.load();
+  
+  // Update Media Session Metadata
+  updateMediaSessionMetadata(song);
+  
+  // Play the song
+  audio.play().then(() => {
+    isPlaying = true;
+    btnPlayPause.textContent = '⏸';
+    updateMediaSessionPlaybackState();
+  }).catch(error => {
+    console.error('Error playing audio:', error);
+  });
+  
+  // Highlight playing card
+  const musicCards = document.querySelectorAll('.music-card');
+  musicCards.forEach(card => card.classList.remove('playing'));
+  
+  if (musicCards[index]) {
+    musicCards[index].classList.add('playing');
+  }
+}
+
+// Toggle Play/Pause
+function togglePlayPause() {
+  if (!audio.src) {
+    playSong(0);
+    return;
+  }
+  
+  if (isPlaying) {
+    audio.pause();
+    btnPlayPause.textContent = '▶';
+  } else {
+    audio.play().then(() => {
+      btnPlayPause.textContent = '⏸';
+    }).catch(error => {
+      console.error('Error playing audio:', error);
+    });
+  }
+  
+  isPlaying = !isPlaying;
+  updateMediaSessionPlaybackState();
+}
+
+// Play Previous Song
+function playPrevious() {
+  if (isShuffled) {
+    currentSongIndex = Math.floor(Math.random() * currentSongsList.length);
+  } else {
+    currentSongIndex = (currentSongIndex - 1 + currentSongsList.length) % currentSongsList.length;
+  }
+  
+  playSong(currentSongIndex, currentSongsList);
+}
+
+// Play Next Song
+function playNext() {
+  if (isShuffled) {
+    currentSongIndex = Math.floor(Math.random() * currentSongsList.length);
+  } else {
+    currentSongIndex = (currentSongIndex + 1) % currentSongsList.length;
+  }
+  
+  playSong(currentSongIndex, currentSongsList);
+}
+
+// Toggle Shuffle
+function toggleShuffle() {
+  isShuffled = !isShuffled;
+  btnShuffle.classList.toggle('active', isShuffled);
+}
+
+// Toggle Repeat
+function toggleRepeat() {
+  repeatMode = (repeatMode + 1) % 3;
+  
+  btnRepeat.classList.toggle('active', repeatMode > 0);
+  
+  if (repeatMode === 1) {
+    btnRepeat.textContent = '🔁';
+    btnRepeat.title = 'Repeat All';
+  } else if (repeatMode === 2) {
+    btnRepeat.textContent = '🔂';
+    btnRepeat.title = 'Repeat One';
+  } else {
+    btnRepeat.textContent = '🔁';
+    btnRepeat.title = 'Repeat Off';
+  }
+}
+
+// Seek Audio
+function seekAudio(e) {
+  const rect = progressBar.getBoundingClientRect();
+  const percent = (e.clientX - rect.left) / rect.width;
+  audio.currentTime = percent * audio.duration;
+  updateMediaSessionPositionState();
+}
+
+// Format Time (seconds to MM:SS)
+function formatTime(seconds) {
   if (isNaN(seconds)) return '0:00';
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
