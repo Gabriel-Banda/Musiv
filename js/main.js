@@ -7,10 +7,120 @@
         album: "100 Gigs",
         genre: "Pop",
         cover: "https://tse4.mm.bing.net/th/id/OIP.zkoY_Iq9AIVWLXWInR9_8QHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
-        audio: "songs/01 Circadian Rhythm - (SongsLover.com).mp3", // Placeholder - replace with actual URL
+        audio: "Songs/Circadian Rhythm.mp3",
         duration: 200
       },
-       {
+      {
+        id: 2,
+        title: "3 AM",
+        artist: "Leo Shimmey ft Don Toliver",
+        album: "Rockstar Junkie",
+        genre: "Hip Pop",
+        cover: "https://images.genius.com/4f8f15f3f9a174ed5cd5fdf7a819aa8f.1000x1000x1.png",
+        audio: "Songs/3am.mp3",
+        duration: 200
+      },
+      {
+        id: 3,
+        title: "Him",
+        artist: "DaBaby ft Big Boogie",
+        album: "Single",
+        genre: "Hip Hop",
+        cover: "https://tse3.mm.bing.net/th/id/OIP.7I7mA2_vvabcyDdI0fsMQQHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
+        audio: "Songs/DaBaby-HIM-Ft-Big-Boogie-(HipHopKit.com).mp3",
+        duration: 200
+      },
+      {
+        id: 4,
+        title: "Ima Hoe Too",
+        artist: "DaBaby ft Yung Miami",
+        album: "Single",
+        genre: "Hip Hop",
+        cover: "https://tse1.explicit.bing.net/th/id/OIP.p6BNsu3Oa8udFKvHwAjIUwHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
+        audio: "Songs/DaBaby-IMA-HOE-TOO-Ft-Yung-Miami-(HipHopKit.com).mp3",
+        duration: 200
+      },
+      {
+        id: 5,
+        title: "In A Minute",
+        artist: "DaBaby",
+        album: "HOW TF IS THIS A MIXTAPE?",
+        genre: "Hip Hop",
+        cover: "https://images.genius.com/9fb553bf8e3ee97bdbd79155d5cc5f3b.1000x1000x1.png",
+        audio: "Songs/DaBaby-In-a-Minute-Intro-(HipHopKit.com).mp3",
+        duration: 200
+      },
+      {
+        id: 6,
+        title: "PHAT",
+        artist: "DaBaby",
+        album: "HOW TF IS THIS A MIXTAPE?",
+        genre: "Hip Hop",
+        cover: "https://images.genius.com/9fb553bf8e3ee97bdbd79155d5cc5f3b.1000x1000x1.png",
+        audio: "Songs/DaBaby-PHAT-(HipHopKit.com).mp3",
+        duration: 200
+      },
+      {
+        id: 7,
+        title: "God Did",
+        artist: "DJ Khaled ft Rick Ross, Lil Wayne, Jay Z, John Legend & Fridayy",
+        album: "God Did",
+        genre: "Hip hop · urban gospel · R&B",
+        cover: "https://static.stereogum.com/uploads/2022/08/300836415_119694174028719_3040686577807116223_n-1661282175-1000x1000.jpg",
+        audio: "Songs/DJ-Khaled-GOD-DID-New-Song-ft-Rick-Ross-Lil-Wayne-Jay-Z-John-Legend-Fridayy-(HipHopKit.com).mp3",
+        duration: 200
+      },
+      {
+        id: 8,
+        title: "Juice WRLD Did",
+        artist: "DJ Khaled ft Juice WRLD",
+        album: "God Did",
+        genre: "Hip Hop",
+        cover: "https://static.stereogum.com/uploads/2022/08/300836415_119694174028719_3040686577807116223_n-1661282175-1000x1000.jpg",
+        audio: "Songs/DJ-Khaled-Juice-WRLD-DID-ft-Juice-WRLD-(HipHopKit.com).mp3",
+        duration: 200
+      },
+      {
+        id: 9,
+        title: "Let's Pray",
+        artist: "DJ Khaled ft Don Toliver & Travis Scott",
+        album: "Single",
+        genre: "Hip Hop",
+        cover: "https://tse1.explicit.bing.net/th/id/OIP.p6BNsu3Oa8udFKvHwAjIUwHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
+        audio: "Songs/DJ-Khaled-LETS-PRAY-ft-Don-Toliver-Travis-Scott-(HipHopKit.com).mp3",
+        duration: 200
+      },
+      {
+        id: 10,
+        title: "Brother Stone",
+        artist: "Don Toliver ft Kodak Black",
+        album: "Hardstone Psycho",
+        genre: "Hip Hop",
+        cover: "https://tse1.mm.bing.net/th/id/OIP.Duw-ulcdw7ewlXDQ7B9rmAHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
+        audio: "Songs/Don-Toliver-BROTHER-STONE-Ft-Kodak-Black.mp3",
+        duration: 200
+      },
+      {
+        id: 11,
+        title: "Life Is Good (Remix)",
+        artist: "Future ft Drake, DaBaby & Lil Baby",
+        album: "Single",
+        genre: "Hip Hop",
+        cover: "https://tse1.mm.bing.net/th/id/OIP.Md1cS2iSV5q9niQYGjpESwHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
+        audio: "Songs/Future-Ft-Drake-DaBaby-Lil-Baby-Life-Is-Good-Remix-(HipHopKit.com).mp3",
+        duration: 200
+      },
+      {
+        id: 1,
+        title: "Circadian Rhythm",
+        artist: "Drake",
+        album: "100 Gigs",
+        genre: "Pop",
+        cover: "https://tse4.mm.bing.net/th/id/OIP.zkoY_Iq9AIVWLXWInR9_8QHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
+        audio: "Songs/Circadian Rhythm.mp3",
+        duration: 200
+      },
+      {
         title: "Miss My Dog",
         artist: "Young Thug",
         album: "Single",
