@@ -1877,119 +1877,167 @@ function initAudioPlayer() {
   audio.addEventListener('pause', function() {
     updateMediaSessionPlaybackState();
   });
+
+  // Handle audio errors
+  audio.addEventListener('error', function(e) {
+    console.error('Audio error:', e);
+    // Try to play next song on error
+    setTimeout(playNext, 1000);
+  });
 }
 
-// Initialize Media Session API
+// Initialize Media Session API with enhanced mobile support
 function initMediaSession() {
   // Check if Media Session API is supported
   if ('mediaSession' in navigator) {
-    // Set media session action handlers
-    navigator.mediaSession.setActionHandler('play', function() {
-      togglePlayPause();
-    });
+    console.log('Media Session API supported');
+    
+    // Set media session action handlers with better error handling
+    try {
+      navigator.mediaSession.setActionHandler('play', function() {
+        console.log('Media Session: Play action');
+        togglePlayPause();
+      });
 
-    navigator.mediaSession.setActionHandler('pause', function() {
-      togglePlayPause();
-    });
+      navigator.mediaSession.setActionHandler('pause', function() {
+        console.log('Media Session: Pause action');
+        togglePlayPause();
+      });
 
-    navigator.mediaSession.setActionHandler('previoustrack', function() {
-      playPrevious();
-    });
+      navigator.mediaSession.setActionHandler('previoustrack', function() {
+        console.log('Media Session: Previous track action');
+        playPrevious();
+      });
 
-    navigator.mediaSession.setActionHandler('nexttrack', function() {
-      playNext();
-    });
+      navigator.mediaSession.setActionHandler('nexttrack', function() {
+        console.log('Media Session: Next track action');
+        playNext();
+      });
 
-    navigator.mediaSession.setActionHandler('seekbackward', function(details) {
-      const skipTime = details.seekOffset || 10;
-      audio.currentTime = Math.max(audio.currentTime - skipTime, 0);
-    });
-
-    navigator.mediaSession.setActionHandler('seekforward', function(details) {
-      const skipTime = details.seekOffset || 10;
-      audio.currentTime = Math.min(audio.currentTime + skipTime, audio.duration);
-    });
-
-    navigator.mediaSession.setActionHandler('seekto', function(details) {
-      if (details.fastSeek && 'fastSeek' in audio) {
-        audio.fastSeek(details.seekTime);
-        return;
-      }
-      audio.currentTime = details.seekTime;
-    });
-
-    // Set position state (for progress bar in media controls)
-    function updateMediaSessionPositionState() {
-      if ('setPositionState' in navigator.mediaSession) {
-        navigator.mediaSession.setPositionState({
-          duration: audio.duration,
-          playbackRate: audio.playbackRate,
-          position: audio.currentTime
+      // Optional handlers - only set if supported
+      try {
+        navigator.mediaSession.setActionHandler('seekbackward', function(details) {
+          const skipTime = details.seekOffset || 10;
+          audio.currentTime = Math.max(audio.currentTime - skipTime, 0);
         });
+
+        navigator.mediaSession.setActionHandler('seekforward', function(details) {
+          const skipTime = details.seekOffset || 10;
+          audio.currentTime = Math.min(audio.currentTime + skipTime, audio.duration);
+        });
+
+        navigator.mediaSession.setActionHandler('seekto', function(details) {
+          if (details.fastSeek && 'fastSeek' in audio) {
+            audio.fastSeek(details.seekTime);
+            return;
+          }
+          audio.currentTime = details.seekTime;
+        });
+      } catch (error) {
+        console.log('Optional Media Session actions not supported:', error);
       }
+    } catch (error) {
+      console.error('Error setting Media Session actions:', error);
     }
-
-    // Update playback state for media session
-    window.updateMediaSessionPlaybackState = function() {
-      navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
-    };
-
-    // Update media session metadata
-    window.updateMediaSessionMetadata = function(song) {
-      if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: song.title,
-          artist: song.artist,
-          album: song.album,
-          artwork: [
-            { src: song.cover, sizes: '96x96', type: 'image/jpeg' },
-            { src: song.cover, sizes: '128x128', type: 'image/jpeg' },
-            { src: song.cover, sizes: '192x192', type: 'image/jpeg' },
-            { src: song.cover, sizes: '256x256', type: 'image/jpeg' },
-            { src: song.cover, sizes: '384x384', type: 'image/jpeg' },
-            { src: song.cover, sizes: '512x512', type: 'image/jpeg' }
-          ]
-        });
-      }
-    };
+  } else {
+    console.log('Media Session API not supported');
   }
 }
 
 // Update Media Session Playback State
 function updateMediaSessionPlaybackState() {
   if ('mediaSession' in navigator) {
-    navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+    try {
+      navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+      console.log('Media Session playback state updated:', navigator.mediaSession.playbackState);
+    } catch (error) {
+      console.error('Error updating Media Session playback state:', error);
+    }
   }
 }
 
 // Update Media Session Position State
 function updateMediaSessionPositionState() {
   if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
-    navigator.mediaSession.setPositionState({
-      duration: audio.duration,
-      playbackRate: audio.playbackRate,
-      position: audio.currentTime
-    });
+    try {
+      navigator.mediaSession.setPositionState({
+        duration: audio.duration,
+        playbackRate: audio.playbackRate,
+        position: audio.currentTime
+      });
+    } catch (error) {
+      console.error('Error updating Media Session position state:', error);
+    }
   }
 }
 
-// Update Media Session Metadata
+// Enhanced Media Session Metadata with better image handling
 function updateMediaSessionMetadata(song) {
   if ('mediaSession' in navigator) {
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: song.title,
-      artist: song.artist,
-      album: song.album,
-      artwork: [
-        { src: song.cover, sizes: '96x96', type: 'image/jpeg' },
-        { src: song.cover, sizes: '128x128', type: 'image/jpeg' },
-        { src: song.cover, sizes: '192x192', type: 'image/jpeg' },
-        { src: song.cover, sizes: '256x256', type: 'image/jpeg' },
-        { src: song.cover, sizes: '384x384', type: 'image/jpeg' },
-        { src: song.cover, sizes: '512x512', type: 'image/jpeg' }
-      ]
-    });
+    try {
+      // Create artwork array with multiple sizes for better compatibility
+      const artwork = [];
+      const sizes = ['96x96', '128x128', '192x192', '256x256', '384x384', '512x512'];
+      
+      // Use the song's cover image for all sizes
+      // The browser will automatically choose the best size
+      sizes.forEach(size => {
+        artwork.push({
+          src: song.cover,
+          sizes: size,
+          type: getImageMimeType(song.cover) // Dynamically detect image type
+        });
+      });
+
+      // Update media session metadata
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: song.title || 'Unknown Title',
+        artist: song.artist || 'Unknown Artist',
+        album: song.album || 'Unknown Album',
+        artwork: artwork
+      });
+      
+      console.log('Media Session metadata updated for:', song.title);
+    } catch (error) {
+      console.error('Error updating Media Session metadata:', error);
+    }
   }
+}
+
+// Helper function to detect image MIME type from URL
+function getImageMimeType(imageUrl) {
+  if (!imageUrl) return 'image/jpeg';
+  
+  const extension = imageUrl.split('.').pop().toLowerCase();
+  const mimeTypes = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'webp': 'image/webp',
+    'svg': 'image/svg+xml',
+    'bmp': 'image/bmp'
+  };
+  
+  return mimeTypes[extension] || 'image/jpeg';
+}
+
+// Enhanced image loading with fallback
+function loadImageWithFallback(imgElement, src, fallbackSrc = 'https://via.placeholder.com/300/1a1a1a/ffffff?text=No+Image') {
+  const img = new Image();
+  
+  img.onload = function() {
+    imgElement.src = src;
+    imgElement.style.display = 'block';
+  };
+  
+  img.onerror = function() {
+    console.warn('Failed to load image:', src, 'Using fallback');
+    imgElement.src = fallbackSrc;
+    imgElement.style.display = 'block';
+  };
+  
+  img.src = src;
 }
 
 // Load Section Content
@@ -2135,12 +2183,12 @@ function loadSection(section) {
   }, 0);
 }
 
-// Render Music Cards
+// Enhanced Render Music Cards with better image handling
 function renderMusicCards(songsArray) {
   return songsArray.map(song => `
     <div class="music-card" data-id="${song.id}">
       <div class="music-card-cover">
-        <img src="${song.cover}" alt="${song.album}" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+        <img src="" data-src="${song.cover}" alt="${song.album}" class="lazy-image" onerror="this.src='https://via.placeholder.com/300/1a1a1a/ffffff?text=No+Image'">
       </div>
       <div class="music-card-info">
         <div class="music-card-title">${song.title}</div>
@@ -2153,6 +2201,23 @@ function renderMusicCards(songsArray) {
       </div>
     </div>
   `).join('');
+}
+
+// Lazy load images after rendering
+function lazyLoadImages() {
+  const lazyImages = document.querySelectorAll('.lazy-image');
+  
+  const imageObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        loadImageWithFallback(img, img.getAttribute('data-src'));
+        imageObserver.unobserve(img);
+      }
+    });
+  });
+
+  lazyImages.forEach(img => imageObserver.observe(img));
 }
 
 // Filter Songs
@@ -2169,6 +2234,9 @@ function filterSongs(query) {
   const container = document.getElementById('music-cards-container');
   if (container) {
     container.innerHTML = renderMusicCards(filteredSongs);
+    
+    // Lazy load images for filtered results
+    setTimeout(lazyLoadImages, 0);
     
     // Reattach event listeners
     setTimeout(() => {
@@ -2191,6 +2259,9 @@ function filterByGenre(genre) {
   if (container) {
     container.innerHTML = renderMusicCards(filteredSongs);
     
+    // Lazy load images for filtered results
+    setTimeout(lazyLoadImages, 0);
+    
     // Reattach event listeners
     setTimeout(() => {
       const musicCards = document.querySelectorAll('.music-card');
@@ -2203,38 +2274,57 @@ function filterByGenre(genre) {
   }
 }
 
-// Play Song
+// Enhanced Play Song function
 function playSong(index, songsArray = songs) {
-  currentSongIndex = index;
-  const song = songsArray[index];
-  
-  // Update player UI
-  playerCover.src = song.cover;
-  playerTitle.textContent = song.title;
-  playerArtist.textContent = song.artist;
-  
-  // Set audio source
-  audio.src = song.audio;
-  audio.load();
-  
-  // Update Media Session Metadata
-  updateMediaSessionMetadata(song);
-  
-  // Play the song
-  audio.play().then(() => {
-    isPlaying = true;
-    btnPlayPause.textContent = '⏸';
-    updateMediaSessionPlaybackState();
-  }).catch(error => {
-    console.error('Error playing audio:', error);
-  });
-  
-  // Highlight playing card
-  const musicCards = document.querySelectorAll('.music-card');
-  musicCards.forEach(card => card.classList.remove('playing'));
-  
-  if (musicCards[index]) {
-    musicCards[index].classList.add('playing');
+  try {
+    currentSongIndex = index;
+    const song = songsArray[index];
+    
+    if (!song) {
+      console.error('No song found at index:', index);
+      return;
+    }
+    
+    console.log('Playing song:', song.title);
+    
+    // Update player UI with enhanced image loading
+    loadImageWithFallback(playerCover, song.cover);
+    playerTitle.textContent = song.title;
+    playerArtist.textContent = song.artist;
+    
+    // Set audio source with error handling
+    audio.src = song.audio;
+    audio.load();
+    
+    // Update Media Session Metadata
+    updateMediaSessionMetadata(song);
+    
+    // Play the song with better error handling
+    const playPromise = audio.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        isPlaying = true;
+        btnPlayPause.textContent = '⏸';
+        updateMediaSessionPlaybackState();
+        console.log('Audio playback started successfully');
+      }).catch(error => {
+        console.error('Error playing audio:', error);
+        // Fallback: try to play next song
+        setTimeout(playNext, 1000);
+      });
+    }
+    
+    // Highlight playing card
+    const musicCards = document.querySelectorAll('.music-card');
+    musicCards.forEach(card => card.classList.remove('playing'));
+    
+    if (musicCards[index]) {
+      musicCards[index].classList.add('playing');
+    }
+    
+  } catch (error) {
+    console.error('Error in playSong:', error);
   }
 }
 
@@ -2249,11 +2339,14 @@ function togglePlayPause() {
     audio.pause();
     btnPlayPause.textContent = '▶';
   } else {
-    audio.play().then(() => {
-      btnPlayPause.textContent = '⏸';
-    }).catch(error => {
-      console.error('Error playing audio:', error);
-    });
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        btnPlayPause.textContent = '⏸';
+      }).catch(error => {
+        console.error('Error playing audio:', error);
+      });
+    }
   }
   
   isPlaying = !isPlaying;
@@ -2321,3 +2414,8 @@ function formatTime(seconds) {
   const secs = Math.floor(seconds % 60);
   return mins + ':' + (secs < 10 ? '0' : '') + secs;
 }
+
+// Initialize lazy loading after DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(lazyLoadImages, 1000);
+});
