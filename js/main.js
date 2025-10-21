@@ -1686,7 +1686,7 @@
 let currentSongIndex = 0;
 let isPlaying = false;
 let isShuffled = false;
-let repeatMode = 0; // 0: off, 1: all, 2: one
+let repeatMode = 1; // 0: off, 1: all, 2: one
 let currentVolume = 0.8;
 let currentSongsList = songs; // Track current displayed songs for filtering
 let isDragging = false; // Track if user is dragging progress bar
