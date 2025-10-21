@@ -1690,6 +1690,8 @@ let repeatMode = 1; // 0: off, 1: all, 2: one
 let currentVolume = 0.8;
 let currentSongsList = songs; // Track current displayed songs for filtering
 let isDragging = false; // Track if user is dragging progress bar
+let errorCount = 0; // Track consecutive errors to prevent infinite loops
+const MAX_ERRORS = 3; // Maximum consecutive errors before stopping
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
@@ -1749,6 +1751,34 @@ function updateBackgroundCover(imageUrl) {
   };
   
   img.src = imageUrl;
+}
+
+// Show Error Message
+function showError(message) {
+  // Remove any existing error messages
+  const existingError = document.querySelector('.error-message');
+  if (existingError) {
+    existingError.remove();
+  }
+  
+  const errorDiv = document.createElement('div');
+  errorDiv.className = 'error-message';
+  errorDiv.textContent = message;
+  
+  // Insert error message at the top of section area
+  const sectionArea = document.getElementById('section-area');
+  if (sectionArea.firstChild) {
+    sectionArea.insertBefore(errorDiv, sectionArea.firstChild);
+  } else {
+    sectionArea.appendChild(errorDiv);
+  }
+  
+  // Auto remove after 5 seconds
+  setTimeout(() => {
+    if (errorDiv.parentNode) {
+      errorDiv.remove();
+    }
+  }, 5000);
 }
 
 // Initialize App
@@ -1895,10 +1925,15 @@ function initAudioPlayer() {
   });
   
   audio.addEventListener('ended', function() {
+    errorCount = 0; // Reset error count on successful play completion
+    
     if (repeatMode === 2) {
       // Repeat one
       audio.currentTime = 0;
-      audio.play();
+      audio.play().catch(e => {
+        console.error('Error replaying current song:', e);
+        showError('Error replaying current song');
+      });
     } else if (repeatMode === 1 || isShuffled) {
       // Repeat all or shuffle
       playNext();
@@ -1918,11 +1953,29 @@ function initAudioPlayer() {
     updateMediaSessionPlaybackState();
   });
 
-  // Handle audio errors
+  // FIXED: Handle audio errors properly to prevent rapid song changes
   audio.addEventListener('error', function(e) {
     console.error('Audio error:', e);
-    // Try to play next song on error
-    setTimeout(playNext, 1000);
+    errorCount++;
+    
+    if (errorCount >= MAX_ERRORS) {
+      // Stop trying after too many errors
+      showError('Unable to play audio. Please try another song.');
+      isPlaying = false;
+      btnPlayPause.textContent = '▶';
+      return;
+    }
+    
+    // Show error message
+    const currentSong = currentSongsList[currentSongIndex];
+    showError(`Error playing "${currentSong.title}". Trying next song...`);
+    
+    // Try to play next song after a delay, but not immediately
+    setTimeout(() => {
+      if (errorCount < MAX_ERRORS) {
+        playNext();
+      }
+    }, 2000);
   });
 }
 
@@ -2277,6 +2330,9 @@ function loadSection(section) {
         playSong(index, currentSongsList);
       });
     });
+    
+    // Lazy load images
+    lazyLoadImages();
   }, 0);
 }
 
@@ -2379,10 +2435,14 @@ function playSong(index, songsArray = songs) {
     
     if (!song) {
       console.error('No song found at index:', index);
+      showError('No song found to play');
       return;
     }
     
     console.log('Playing song:', song.title);
+    
+    // Reset error count when starting a new song
+    errorCount = 0;
     
     // Update player UI with enhanced image loading
     loadImageWithFallback(playerCover, song.cover);
@@ -2410,8 +2470,9 @@ function playSong(index, songsArray = songs) {
         console.log('Audio playback started successfully');
       }).catch(error => {
         console.error('Error playing audio:', error);
-        // Fallback: try to play next song
-        setTimeout(playNext, 1000);
+        showError('Error playing audio. Please try again.');
+        isPlaying = false;
+        btnPlayPause.textContent = '▶';
       });
     }
     
@@ -2425,6 +2486,7 @@ function playSong(index, songsArray = songs) {
     
   } catch (error) {
     console.error('Error in playSong:', error);
+    showError('Error playing song. Please try another one.');
   }
 }
 
@@ -2445,6 +2507,7 @@ function togglePlayPause() {
         btnPlayPause.textContent = '⏸';
       }).catch(error => {
         console.error('Error playing audio:', error);
+        showError('Error playing audio');
       });
     }
   }

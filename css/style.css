@@ -793,3 +793,13 @@ body {
 .music-card.playing {
   box-shadow: 0 0 0 2px var(--primary-color);
 }
+
+.error-message {
+  background: var(--accent-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+  text-align: center;
+}
