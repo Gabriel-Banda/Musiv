@@ -7,7 +7,22 @@
   <meta name="description" content="Stream your favorite music with Xyla - High quality audio streaming service">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="Assets/Images/Favicon 2.png">
-    <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Additional CSS for the sidebar header image */
+    .sidebar-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+    
+    .sidebar-header img {
+      max-width: 100%;
+      max-height: 60px;
+      object-fit: contain;
+    }
+  </style>
 </head>
 <body>
     <!-- Blurred Background -->
@@ -24,7 +39,7 @@
     <nav id="sidebar">
       <div>
         <div class="sidebar-header">
-          <div class="logo">Xyla</div>
+          <img src="Assets/Images/Xyla Logo 1.png" alt="Xyla Logo">
         </div>
         <ul class="sidebar-nav">
           <li><a class="sidebar-link active" data-section="home">
