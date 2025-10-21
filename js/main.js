@@ -1682,7 +1682,7 @@
       },
     ];
 
-// App State
+// Site State
 let currentSongIndex = 0;
 let isPlaying = false;
 let isShuffled = false;
@@ -1781,6 +1781,65 @@ function showError(message) {
   }, 5000);
 }
 
+// Download Song Function
+function downloadSong(song, event) {
+  event.stopPropagation(); // Prevent triggering the card click event
+  
+  try {
+    // Create a temporary anchor element
+    const a = document.createElement('a');
+    a.href = song.audio;
+    a.download = `${song.artist} - ${song.title}.mp3`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    // Show success feedback
+    const downloadBtn = event.currentTarget;
+    const originalHTML = downloadBtn.innerHTML;
+    downloadBtn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+      </svg>
+      Downloaded
+    `;
+    downloadBtn.style.color = 'var(--success-color)';
+    
+    // Reset button after 2 seconds
+    setTimeout(() => {
+      downloadBtn.innerHTML = originalHTML;
+      downloadBtn.style.color = '';
+    }, 2000);
+    
+  } catch (error) {
+    console.error('Error downloading song:', error);
+    showError('Error downloading song. Please try again.');
+  }
+}
+
+// Update Repeat Button Icon
+function updateRepeatButton() {
+  const repeatIcon = btnRepeat.querySelector('.repeat-icon');
+  
+  switch(repeatMode) {
+    case 0: // Off
+      repeatIcon.innerHTML = '<path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>';
+      btnRepeat.title = 'Repeat Off';
+      break;
+    case 1: // All
+      repeatIcon.innerHTML = '<path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>';
+      btnRepeat.title = 'Repeat All';
+      break;
+    case 2: // One
+      repeatIcon.innerHTML = '<path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2V9h-1l-2 1v1h1.5v4H13z"/>';
+      btnRepeat.title = 'Repeat One';
+      break;
+  }
+  
+  // Update active state
+  btnRepeat.classList.toggle('active', repeatMode > 0);
+}
+
 // Initialize App
 document.addEventListener('DOMContentLoaded', function() {
   
@@ -1806,6 +1865,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initialize background with no image
   updateBackgroundCover(null);
+  
+  // Initialize repeat button
+  updateRepeatButton();
 });
 
 // Setup Event Listeners
@@ -2336,7 +2398,7 @@ function loadSection(section) {
   }, 0);
 }
 
-// Enhanced Render Music Cards with better image handling
+// Enhanced Render Music Cards with download button
 function renderMusicCards(songsArray) {
   return songsArray.map(song => `
     <div class="music-card" data-id="${song.id}">
@@ -2349,7 +2411,12 @@ function renderMusicCards(songsArray) {
         <div class="music-card-album">${song.album}</div>
       </div>
       <div class="music-card-actions">
-        <button class="music-card-btn">▶ Play</button>
+        <button class="music-card-btn download-btn" onclick="downloadSong(${JSON.stringify(song).replace(/"/g, '&quot;')}, event)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+          </svg>
+          Download
+        </button>
         <button class="music-card-btn">❤</button>
       </div>
     </div>
@@ -2547,19 +2614,7 @@ function toggleShuffle() {
 // Toggle Repeat
 function toggleRepeat() {
   repeatMode = (repeatMode + 1) % 3;
-  
-  btnRepeat.classList.toggle('active', repeatMode > 0);
-  
-  if (repeatMode === 1) {
-    btnRepeat.textContent = '🔁';
-    btnRepeat.title = 'Repeat All';
-  } else if (repeatMode === 2) {
-    btnRepeat.textContent = '🔂';
-    btnRepeat.title = 'Repeat One';
-  } else {
-    btnRepeat.textContent = '🔁';
-    btnRepeat.title = 'Repeat Off';
-  }
+  updateRepeatButton();
 }
 
 // Format Time (seconds to MM:SS)
