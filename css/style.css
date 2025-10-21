@@ -21,6 +21,60 @@
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
+/* Blurred Background */
+#background-cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(30px) brightness(1);
+  transform: scale(1.1); /* Prevents blur edges */
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 1s ease, background-image 1s ease;
+  pointer-events: none;
+}
+
+#background-cover.active {
+  opacity: 1;
+}
+
+/* Adjust main content to work with background */
+.app-container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Make sure content areas have some transparency to show background */
+#main-content,
+#audio-player-bar {
+  background: rgba(15, 20, 25, 0.7);
+  backdrop-filter: blur(10px);
+}
+
+/* Update existing background colors to be more transparent */
+.topbar {
+  background: rgba(26, 31, 46, 0.5) !important;
+}
+
+#sidebar {
+  background: rgba(20, 26, 37, 0.8) !important;
+}
+
+.music-card {
+  background: rgba(26, 31, 46, 0.6) !important;
+  backdrop-filter: blur(10px);
+}
+
+.settings-box {
+  background: rgba(26, 31, 46, 0.9) !important;
+  backdrop-filter: blur(20px);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -230,6 +284,13 @@ body {
   background: rgba(255, 255, 255, 0.1);
 }
 
+.progress-bar.dragging {
+  cursor: grabbing;
+}
+
+.progress-bar.dragging .progress-inner {
+  transition: none; /* Remove smooth transitions during drag for better responsiveness */
+}
 /* Content Area */
 #section-area {
   flex: 1;

@@ -1689,6 +1689,7 @@ let isShuffled = false;
 let repeatMode = 0; // 0: off, 1: all, 2: one
 let currentVolume = 0.8;
 let currentSongsList = songs; // Track current displayed songs for filtering
+let isDragging = false; // Track if user is dragging progress bar
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
@@ -1724,6 +1725,32 @@ const closeContacts = document.getElementById('close-contacts');
 const saveSettings = document.getElementById('save-settings');
 const logoutBtn = document.getElementById('logout-btn');
 
+// Update Background Cover Function
+function updateBackgroundCover(imageUrl) {
+  const backgroundCover = document.getElementById('background-cover');
+  
+  if (!imageUrl || imageUrl.includes('placeholder.com')) {
+    // Remove background if no valid image
+    backgroundCover.classList.remove('active');
+    return;
+  }
+  
+  // Create a new image to preload and check if it loads successfully
+  const img = new Image();
+  img.onload = function() {
+    // Set the background image and fade it in
+    backgroundCover.style.backgroundImage = `url('${imageUrl}')`;
+    backgroundCover.classList.add('active');
+  };
+  
+  img.onerror = function() {
+    // Hide background if image fails to load
+    backgroundCover.classList.remove('active');
+  };
+  
+  img.src = imageUrl;
+}
+
 // Initialize App
 document.addEventListener('DOMContentLoaded', function() {
   
@@ -1746,6 +1773,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initialize Media Session API
   initMediaSession();
+  
+  // Initialize background with no image
+  updateBackgroundCover(null);
 });
 
 // Setup Event Listeners
@@ -1830,8 +1860,18 @@ function initAudioPlayer() {
   btnShuffle.addEventListener('click', toggleShuffle);
   btnRepeat.addEventListener('click', toggleRepeat);
   
-  // Progress bar
+  // Progress bar - Click and Drag functionality
   progressBar.addEventListener('click', seekAudio);
+  
+  // Mouse events for dragging
+  progressBar.addEventListener('mousedown', startDrag);
+  document.addEventListener('mousemove', whileDrag);
+  document.addEventListener('mouseup', endDrag);
+  
+  // Touch events for mobile dragging
+  progressBar.addEventListener('touchstart', startDrag);
+  document.addEventListener('touchmove', whileDrag);
+  document.addEventListener('touchend', endDrag);
   
   // Volume control
   volumeRange.addEventListener('input', function() {
@@ -1846,7 +1886,7 @@ function initAudioPlayer() {
   });
   
   audio.addEventListener('timeupdate', function() {
-    if (audio.duration) {
+    if (audio.duration && !isDragging) {
       const progressPercent = (audio.currentTime / audio.duration) * 100;
       progressInner.style.width = progressPercent + '%';
       playerCurrent.textContent = formatTime(audio.currentTime);
@@ -1884,6 +1924,63 @@ function initAudioPlayer() {
     // Try to play next song on error
     setTimeout(playNext, 1000);
   });
+}
+
+// Progress Bar Drag Functions
+function startDrag(e) {
+  if (!audio.duration) return;
+  
+  isDragging = true;
+  progressBar.classList.add('dragging');
+  
+  // Seek to the position immediately on mousedown/touchstart
+  seekAudio(e);
+}
+
+function whileDrag(e) {
+  if (!isDragging) return;
+  
+  // Prevent default to avoid text selection during drag
+  e.preventDefault();
+  
+  // Update the seek position while dragging
+  seekAudio(e);
+}
+
+function endDrag() {
+  if (!isDragging) return;
+  
+  isDragging = false;
+  progressBar.classList.remove('dragging');
+}
+
+// Enhanced Seek Audio function with drag support
+function seekAudio(e) {
+  if (!audio.duration) return;
+  
+  const rect = progressBar.getBoundingClientRect();
+  let clientX;
+  
+  // Get clientX based on event type (mouse or touch)
+  if (e.type.includes('touch')) {
+    clientX = e.touches[0].clientX;
+  } else {
+    clientX = e.clientX;
+  }
+  
+  const percent = (clientX - rect.left) / rect.width;
+  const newTime = Math.max(0, Math.min(percent * audio.duration, audio.duration));
+  
+  // Update audio current time
+  audio.currentTime = newTime;
+  
+  // Update progress bar and time display immediately
+  const progressPercent = (newTime / audio.duration) * 100;
+  progressInner.style.width = progressPercent + '%';
+  playerCurrent.textContent = formatTime(newTime);
+  
+  // Update Media Session position
+  updateMediaSessionPositionState();
 }
 
 // Initialize Media Session API with enhanced mobile support
@@ -2292,6 +2389,9 @@ function playSong(index, songsArray = songs) {
     playerTitle.textContent = song.title;
     playerArtist.textContent = song.artist;
     
+    // Update blurred background
+    updateBackgroundCover(song.cover);
+    
     // Set audio source with error handling
     audio.src = song.audio;
     audio.load();
@@ -2397,14 +2497,6 @@ function toggleRepeat() {
     btnRepeat.textContent = '🔁';
     btnRepeat.title = 'Repeat Off';
   }
-}
-
-// Seek Audio
-function seekAudio(e) {
-  const rect = progressBar.getBoundingClientRect();
-  const percent = (e.clientX - rect.left) / rect.width;
-  audio.currentTime = percent * audio.duration;
-  updateMediaSessionPositionState();
 }
 
 // Format Time (seconds to MM:SS)
