@@ -153,6 +153,11 @@
           <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
         </svg>
       </button>
+      <button class="player-btn" id="btn-video" title="Music Video">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+        </svg>
+      </button>
     </div>
     <div class="player-progress">
       <span class="progress-time" id="player-current">0:00</span>
@@ -170,6 +175,19 @@
       <input type="range" min="0" max="1" step="0.01" class="volume-slider" id="volume-range" value="0.8">
     </div>
     <audio id="audio" preload="metadata"></audio>
+  </div>
+
+  <!-- YouTube Video Panel -->
+  <div id="youtube-panel">
+    <div class="video-container">
+      <button class="video-close" id="close-youtube">&times;</button>
+      <div class="video-title" id="video-title">Music Video</div>
+      <div id="youtube-player"></div>
+      <div class="video-info">
+        <div class="video-song-title" id="video-song-title">No song selected</div>
+        <div class="video-song-artist" id="video-song-artist">Select a song to play video</div>
+      </div>
+    </div>
   </div>
 
   <!-- Settings Panel -->
@@ -278,6 +296,9 @@
       </div>
     </div>
   </div>
-<script src="js/main.js"></script>
+
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
