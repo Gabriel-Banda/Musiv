@@ -1,4 +1,3 @@
-    // music data (in a real app, this would come from an API)
     const songs = [
       {
         id: 1,
@@ -39,6 +38,7 @@
         genre: "Hip Hop",
         cover: "https://tse1.explicit.bing.net/th/id/OIP.p6BNsu3Oa8udFKvHwAjIUwHaHa?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
         audio: "Songs/DaBaby-IMA-HOE-TOO-Ft-Yung-Miami-(HipHopKit.com).mp3",
+        youtubeId: "uc0fD6hEVxw",
         duration: 200
       },
       {
@@ -49,6 +49,7 @@
         genre: "Hip Hop",
         cover: "https://images.genius.com/9fb553bf8e3ee97bdbd79155d5cc5f3b.1000x1000x1.png",
         audio: "Songs/DaBaby-In-a-Minute-Intro-(HipHopKit.com).mp3",
+        youtubeId: "s6IqWD-DWKU",
         duration: 200
       },
       {
@@ -59,6 +60,7 @@
         genre: "Hip Hop",
         cover: "https://images.genius.com/9fb553bf8e3ee97bdbd79155d5cc5f3b.1000x1000x1.png",
         audio: "Songs/DaBaby-PHAT-(HipHopKit.com).mp3",
+        youtubeId: "",
         duration: 200
       },
       {
@@ -1544,6 +1546,7 @@
         genre: "Hip-hop · trap",
         cover: "https://upload.wikimedia.org/wikipedia/en/thumb/7/79/Drake_-_Certified_Lover_Boy.png/250px-Drake_-_Certified_Lover_Boy.png",
         audio: "Songs/Drake ft Future Young Thug - Way 2 Sexy.mp3",
+        youtubeId: "",
       },
       {
         title: "Girls Want Girls",
@@ -1607,7 +1610,8 @@
         album: "Her Loss",
         genre: "Hip-hop · trap",
         cover: "https://upload.wikimedia.org/wikipedia/en/thumb/3/3a/Drake_and_21_Savage_-_Her_Loss.png/250px-Drake_and_21_Savage_-_Her_Loss.png",
-        audio: "Songs/Drake-Jumbotron-Shit-Poppin-(HipHopKit.com).mp3"
+        audio: "Songs/Drake-Jumbotron-Shit-Poppin-(HipHopKit.com).mp3",
+        youtubeId: "Iu9xmEaHwpU",
       },
       {
         title: "Major Distribution",
@@ -1648,6 +1652,7 @@
         genre: "Hip-hop . trap",
         cover: "https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Drake_-_Dark_Lane_Demo_Tapes.png/250px-Drake_-_Dark_Lane_Demo_Tapes.png",
         audio: "Songs/Drake-Toosie-Slide-(HipHopKit.com).mp3",
+        youtubeId: "xWggTb45brM",
       },
       {
         title: "Wants And Needs",
@@ -1664,6 +1669,7 @@
         genre: "Hip-hop . trap",
         cover: "https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Drake_-_What_Did_I_Miss.png/250px-Drake_-_What_Did_I_Miss.png",
         audio: "Songs/Drake-What-Did-I-Miss-(HipHopKit.com).mp3",
+        youtubeId: "weU76DGHKU0",
       },
       {
         title: "Which One",
@@ -1695,6 +1701,7 @@ let errorCount = 0; // Track consecutive errors to prevent infinite loops
 const MAX_ERRORS = 3; // Maximum consecutive errors before stopping
 let youtubePlayer = null; // YouTube player instance
 let isVideoOpen = false; // Track if YouTube video panel is open
+let currentMode = 'audio'; // 'audio' or 'video' - tracks current playback mode
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
@@ -1884,14 +1891,34 @@ function onYouTubePlayerReady(event) {
 
 // YouTube Player State Change
 function onYouTubePlayerStateChange(event) {
-  // Sync audio with YouTube player
+  // Only handle YouTube player state when in video mode
+  if (currentMode !== 'video') return;
+  
   if (event.data === YT.PlayerState.PLAYING) {
-    if (!isPlaying) {
-      togglePlayPause();
-    }
+    isPlaying = true;
+    btnPlayPause.textContent = '⏸';
+    updateMediaSessionPlaybackState();
   } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-    if (isPlaying) {
-      togglePlayPause();
+    isPlaying = false;
+    btnPlayPause.textContent = '▶';
+    updateMediaSessionPlaybackState();
+    
+    // Handle video ended
+    if (event.data === YT.PlayerState.ENDED) {
+      if (repeatMode === 2) {
+        // Repeat one
+        youtubePlayer.seekTo(0);
+        youtubePlayer.playVideo();
+      } else if (repeatMode === 1 || isShuffled) {
+        // Repeat all or shuffle - play next audio song
+        currentMode = 'audio'; // Switch back to audio mode
+        playNext();
+      } else {
+        // No repeat - stop at end
+        isPlaying = false;
+        btnPlayPause.textContent = '▶';
+        updateMediaSessionPlaybackState();
+      }
     }
   }
 }
@@ -1910,6 +1937,14 @@ function loadYouTubeVideo(song) {
   }
   
   try {
+    // Switch to video mode and stop audio
+    currentMode = 'video';
+    if (isPlaying && currentMode === 'audio') {
+      audio.pause();
+      isPlaying = false;
+      btnPlayPause.textContent = '▶';
+    }
+    
     youtubePlayer.loadVideoById(song.youtubeId);
     videoSongTitle.textContent = song.title;
     videoSongArtist.textContent = song.artist;
@@ -1918,12 +1953,9 @@ function loadYouTubeVideo(song) {
     youtubePanel.style.display = 'flex';
     isVideoOpen = true;
     
-    // Play the video if audio is playing
-    if (isPlaying) {
-      setTimeout(() => {
-        youtubePlayer.playVideo();
-      }, 500);
-    }
+    // Update video button state
+    btnVideo.classList.add('active');
+    
   } catch (error) {
     console.error('Error loading YouTube video:', error);
     showError('Error loading music video');
@@ -1937,6 +1969,16 @@ function closeYouTubeVideo() {
   }
   youtubePanel.style.display = 'none';
   isVideoOpen = false;
+  isPlaying = false;
+  btnPlayPause.textContent = '▶';
+  
+  // Switch back to audio mode if there's a current song
+  if (audio.src) {
+    currentMode = 'audio';
+  }
+  
+  // Update video button state
+  btnVideo.classList.remove('active');
 }
 
 // Initialize App
@@ -2188,7 +2230,7 @@ function initAudioPlayer() {
   });
   
   audio.addEventListener('timeupdate', function() {
-    if (audio.duration && !isDragging) {
+    if (audio.duration && !isDragging && currentMode === 'audio') {
       const progressPercent = (audio.currentTime / audio.duration) * 100;
       progressInner.style.width = progressPercent + '%';
       playerCurrent.textContent = formatTime(audio.currentTime);
@@ -2197,6 +2239,9 @@ function initAudioPlayer() {
   });
   
   audio.addEventListener('ended', function() {
+    // Only handle audio ended events when in audio mode
+    if (currentMode !== 'audio') return;
+    
     errorCount = 0; // Reset error count on successful play completion
     
     if (repeatMode === 2) {
@@ -2214,24 +2259,26 @@ function initAudioPlayer() {
       isPlaying = false;
       btnPlayPause.textContent = '▶';
       updateMediaSessionPlaybackState();
-      
-      // Also stop YouTube video if open
-      if (isVideoOpen && youtubePlayer) {
-        youtubePlayer.stopVideo();
-      }
     }
   });
 
   audio.addEventListener('play', function() {
-    updateMediaSessionPlaybackState();
+    if (currentMode === 'audio') {
+      updateMediaSessionPlaybackState();
+    }
   });
 
   audio.addEventListener('pause', function() {
-    updateMediaSessionPlaybackState();
+    if (currentMode === 'audio') {
+      updateMediaSessionPlaybackState();
+    }
   });
 
   // FIXED: Handle audio errors properly to prevent rapid song changes
   audio.addEventListener('error', function(e) {
+    // Only handle audio errors when in audio mode
+    if (currentMode !== 'audio') return;
+    
     console.error('Audio error:', e);
     errorCount++;
     
@@ -2258,7 +2305,7 @@ function initAudioPlayer() {
 
 // Progress Bar Drag Functions
 function startDrag(e) {
-  if (!audio.duration) return;
+  if (!audio.duration || currentMode !== 'audio') return;
   
   isDragging = true;
   progressBar.classList.add('dragging');
@@ -2268,7 +2315,7 @@ function startDrag(e) {
 }
 
 function whileDrag(e) {
-  if (!isDragging) return;
+  if (!isDragging || currentMode !== 'audio') return;
   
   // Prevent default to avoid text selection during drag
   e.preventDefault();
@@ -2286,7 +2333,7 @@ function endDrag() {
 
 // Enhanced Seek Audio function with drag support
 function seekAudio(e) {
-  if (!audio.duration) return;
+  if (!audio.duration || currentMode !== 'audio') return;
   
   const rect = progressBar.getBoundingClientRect();
   let clientX;
@@ -2724,6 +2771,15 @@ function playSong(index, songsArray = songs) {
     
     console.log('Playing song:', song.title);
     
+    // Switch to audio mode and stop video if playing
+    currentMode = 'audio';
+    if (isVideoOpen && youtubePlayer) {
+      youtubePlayer.stopVideo();
+      isVideoOpen = false;
+      youtubePanel.style.display = 'none';
+      btnVideo.classList.remove('active');
+    }
+    
     // Reset error count when starting a new song
     errorCount = 0;
     
@@ -2754,11 +2810,6 @@ function playSong(index, songsArray = songs) {
         btnPlayPause.textContent = '⏸';
         updateMediaSessionPlaybackState();
         console.log('Audio playback started successfully');
-        
-        // Auto-open YouTube video if available and panel is already open
-        if (isVideoOpen && song.youtubeId && youtubePlayer) {
-          loadYouTubeVideo(song);
-        }
       }).catch(error => {
         console.error('Error playing audio:', error);
         showError('Error playing audio. Please try again.');
@@ -2783,38 +2834,44 @@ function playSong(index, songsArray = songs) {
 
 // Toggle Play/Pause
 function togglePlayPause() {
-  if (!audio.src) {
-    playSong(0);
-    return;
-  }
-  
-  if (isPlaying) {
-    audio.pause();
-    btnPlayPause.textContent = '▶';
+  if (currentMode === 'audio') {
+    // Handle audio play/pause
+    if (!audio.src) {
+      playSong(0);
+      return;
+    }
     
-    // Also pause YouTube video if open
-    if (isVideoOpen && youtubePlayer) {
-      youtubePlayer.pauseVideo();
+    if (isPlaying) {
+      audio.pause();
+      btnPlayPause.textContent = '▶';
+    } else {
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          btnPlayPause.textContent = '⏸';
+        }).catch(error => {
+          console.error('Error playing audio:', error);
+          showError('Error playing audio');
+        });
+      }
     }
-  } else {
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
+    
+    isPlaying = !isPlaying;
+    updateMediaSessionPlaybackState();
+    
+  } else if (currentMode === 'video') {
+    // Handle video play/pause
+    if (isVideoOpen && youtubePlayer) {
+      if (isPlaying) {
+        youtubePlayer.pauseVideo();
+        btnPlayPause.textContent = '▶';
+      } else {
+        youtubePlayer.playVideo();
         btnPlayPause.textContent = '⏸';
-        
-        // Also play YouTube video if open
-        if (isVideoOpen && youtubePlayer) {
-          youtubePlayer.playVideo();
-        }
-      }).catch(error => {
-        console.error('Error playing audio:', error);
-        showError('Error playing audio');
-      });
+      }
+      isPlaying = !isPlaying;
     }
   }
-  
-  isPlaying = !isPlaying;
-  updateMediaSessionPlaybackState();
 }
 
 // Play Previous Song
@@ -2823,6 +2880,15 @@ function playPrevious() {
     currentSongIndex = Math.floor(Math.random() * currentSongsList.length);
   } else {
     currentSongIndex = (currentSongIndex - 1 + currentSongsList.length) % currentSongsList.length;
+  }
+  
+  // Always switch to audio mode when changing songs
+  currentMode = 'audio';
+  if (isVideoOpen && youtubePlayer) {
+    youtubePlayer.stopVideo();
+    isVideoOpen = false;
+    youtubePanel.style.display = 'none';
+    btnVideo.classList.remove('active');
   }
   
   playSong(currentSongIndex, currentSongsList);
@@ -2834,6 +2900,15 @@ function playNext() {
     currentSongIndex = Math.floor(Math.random() * currentSongsList.length);
   } else {
     currentSongIndex = (currentSongIndex + 1) % currentSongsList.length;
+  }
+  
+  // Always switch to audio mode when changing songs
+  currentMode = 'audio';
+  if (isVideoOpen && youtubePlayer) {
+    youtubePlayer.stopVideo();
+    isVideoOpen = false;
+    youtubePanel.style.display = 'none';
+    btnVideo.classList.remove('active');
   }
   
   playSong(currentSongIndex, currentSongsList);
