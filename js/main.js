@@ -1750,7 +1750,15 @@ const logoutBtn = document.getElementById('logout-btn');
 function updateBackgroundCover(imageUrl) {
   const backgroundCover = document.getElementById('background-cover');
   
-  if (!imageUrl || imageUrl.includes('placeholder.com')) {
+  let isPlaceholder = false;
+  try {
+    // Use window.location.origin as base for relative URLs
+    const urlObj = new URL(imageUrl, window.location);
+    isPlaceholder = (urlObj.hostname === 'placeholder.com');
+  } catch (e) {
+    isPlaceholder = true; // consider invalid URLs as placeholder/invalid
+  }
+  if (!imageUrl || isPlaceholder) {
     // Remove background if no valid image
     backgroundCover.classList.remove('active');
     return;
