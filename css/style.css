@@ -1017,10 +1017,7 @@ body {
 .social-btn.youtube { background: linear-gradient(135deg, #FF0000, #CC0000); }
 .social-btn.tiktok { background: linear-gradient(135deg, #000000, #69C9D0); }
 .social-btn.discord { background: linear-gradient(135deg, #5865F2, #4752C4); }
-.social-btn.threads { 
-  background: linear-gradient(135deg, #000000, #333333);
-  color: white;
-}
+.social-btn.threads { background: linear-gradient(135deg, #000000, #333333); }
 
 /* ========================================================================== */
 /* END OF UPDATED SETTINGS AND CONTACTS PANELS */
