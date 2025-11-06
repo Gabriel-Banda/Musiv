@@ -101,7 +101,7 @@ function updateBackgroundCover(imageUrl) {
   try {
     // Use window.location.origin as base for relative URLs
     const urlObj = new URL(imageUrl, window.location);
-    isPlaceholder = (urlObj.hostname === 'placeholder.com');
+    isPlaceholder = (urlObj.hostname === 'via.placeholder.com' || urlObj.hostname === 'placehold.co');
   } catch (e) {
     isPlaceholder = true; // consider invalid URLs as placeholder/invalid
   }
@@ -1432,3 +1432,38 @@ function formatTime(seconds) {
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(lazyLoadImages, 1000);
 });
+// Global error handling
+window.addEventListener('error', function(e) {
+  console.error('Global error:', e.error);
+  showError('An unexpected error occurred');
+});
+
+// Handle page visibility changes
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden) {
+    // Page is hidden, pause audio if needed
+    if (isPlaying && currentMode === 'audio') {
+      audio.pause();
+    }
+  }
+});
+
+// Handle online/offline status
+window.addEventListener('online', function() {
+  showNotification('Connection restored', 'success');
+});
+
+window.addEventListener('offline', function() {
+  showNotification('You are offline', 'error');
+});
+
+// Service Worker registration for PWA (optional)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+      console.log('SW registered: ', registration);
+    }).catch(function(registrationError) {
+      console.log('SW registration failed: ', registrationError);
+    });
+  });
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Musiv - Premium Music Streaming",
+  "short_name": "Musiv",
+  "description": "Stream your favorite music with Musiv",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1419",
+  "theme_color": "#1587c9",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "Assets/Images/Musiv.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "Assets/Images/Musiv.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
